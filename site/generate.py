@@ -12,9 +12,11 @@ that works on ANY web host (no server config needed):
 How to use
 ----------
 1. Edit  data/users.json  (add / change accounts).
-2. Run:   python3 generate.py
-3. Upload to your host everything EXCEPT: generate.py, templates/, data/
-   (in other words upload  index.html  and the  account/  folder).
+2. Run:  python3 generate.py
+3. Done — output goes straight to the REPO ROOT, which is what
+   Cloudflare Pages serves (index.html + account/ + assets/).
+   The only things NOT deployed are these generator sources in site/
+   (generate.py, templates/, data/).
 
 Add a new account WITHOUT Python (works in Notepad too):
   - copy an existing  account/<slug>/  folder, rename it to a new 8-char code,
@@ -27,7 +29,7 @@ HERE    = os.path.dirname(os.path.abspath(__file__))
 DATA    = os.path.join(HERE, "data", "users.json")
 TPL_APP = os.path.join(HERE, "templates", "standalone.html")
 TPL_ACC = os.path.join(HERE, "templates", "account.html")
-OUT     = HERE
+OUT     = os.path.dirname(HERE)   # repo root = web root served by Cloudflare Pages
 
 def esc_js(s):
     # never allow a "</script>" sequence to break out of the inline script

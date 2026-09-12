@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ln1 - Explorant</title>
+<style>
+  /* =====================================================================
+     THEME — exact values copied from the original site's eighthStyle.css
+     (:root palette) and custom.css (.text-theme accent).
+     Change any --variable here to re-skin the whole page instantly.
+     ------------------------------------------------------------------ */
+  @import url('https://fonts.googleapis.com/css?family=Nunito:300,400,600,700');
+
+  :root{
+    --theme-color-1: #dd3f4c;                 /* main accent (red)      */
+    --theme-color-2: #aa5e6c;                 /* accent shade 2         */
+    --theme-color-3: #a5456d;                 /* accent shade 3         */
+    --primary-color: #8f8f8f;                 /* body text              */
+    --foreground-color: #2a2828;              /* card / panel bg        */
+    --separator-color: #424242;               /* borders                */
+    --page-bg: #222020;                       /* page background (logo bg) */
+    --tab-inactive: #707070;                  /* inactive tab text      */
+    --card-strong: #2e2c2c;                   /* slightly lighter bg    */
+    --heading: #ffffff;                       /* headings / item names  */
+  }
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--primary-color);
+    font-family:"Nunito", "Segoe UI", Roboto, -apple-system, Helvetica, Arial, sans-serif;
+    font-size:.85rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  *{box-sizing:border-box;}
+
+  /* ============ TOP NAVBAR ============ */
+  .navbar{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    height:68px;padding:0 24px;
+    background:var(--page-bg);               /* matches the logo bg so it blends seamlessly */
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--separator-color);
+  }
+  .join-btn{
+    background:transparent;color:#dd3f4c;
+    border:1px solid #dd3f4c;border-radius:4px;
+    padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;
+    letter-spacing:.4px;transition:.15s;font-family:inherit;
+  }
+  .join-btn:hover{background:#dd3f4c;color:#fff;}
+  .navbar-logo{
+    display:flex;align-items:center;
+  }
+  .navbar-logo .brand{
+    height:62px;width:auto;display:block;   /* the Explorant logo image */
+  }
+  .navbar-right .user{display:flex;align-items:center;gap:14px;font-size:14px;color:#8f8f8f;font-weight:400;}
+  .navbar-right .user .ava-img{
+    width:40px;height:40px;border-radius:50%;
+    object-fit:cover;display:block;
+    background:#222020;
+    border:1px solid #333;
+  }
+
+  /* ============ MAIN LAYOUT ============ */
+  main{padding-top:104px;max-width:1320px;margin:0 auto;padding-left:28px;padding-right:28px;}
+  h1.account-name{margin:0 0 14px;font-family:'Nunito', sans-serif;font-size:2.1rem;font-weight:300;letter-spacing:1.5px;color:#8f8f8f;}
+  h1.account-name small{font-size:14px;color:var(--primary-color);font-weight:500;letter-spacing:.5px;margin-left:10px;vertical-align:middle;}
+
+  /* ============ TABS (exact separator-tabs styling) ============ */
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:0;
+    border-bottom:1px solid var(--separator-color);
+    margin-bottom:28px;
+  }
+  .tab{
+    padding:9px 0;font-family:'Nunito', sans-serif;font-size:15px;font-weight:600;letter-spacing:.5px;
+    color:var(--tab-inactive);cursor:pointer;
+    position:relative;margin-right:1.5rem;padding-left:0;padding-right:0;
+    white-space:nowrap;transition:color .15s;text-transform:uppercase;
+  }
+  .tab:hover{color:#fff;}
+  .tab.active{color:var(--theme-color-1);}
+  .tab.active::after{
+    content:" ";position:absolute;left:0;bottom:0;width:100%;height:2px;
+    background:var(--theme-color-1);border-radius:10px;
+  }
+  .pane{display:none;}
+  .pane.active{display:block;}
+
+  /* ============ CARDS ============ */
+  .card{
+    background:var(--foreground-color);border-radius:2px;
+    overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+  }
+  .card-img-top{width:100%;aspect-ratio:3/1;object-fit:cover;display:block;background:var(--card-strong);}
+  .card-body{padding:1.4rem;}
+  .card-title{font-family:'Nunito', sans-serif;font-size:1.1rem;font-weight:500;letter-spacing:.5px;text-transform:none;color:var(--primary-color);margin-bottom:1rem;}
+  .card-title hr{border:none;border-top:1px solid var(--separator-color);margin:10px 0 0;}
+  .themed-lbl{font-family:'Nunito',sans-serif;color:var(--theme-color-1);font-size:14px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;margin:0 0 7px;}
+  .val{font-family:'Nunito',sans-serif;color:#8f8f8f;font-size:15px;font-weight:400;margin:0 0 12px;}
+  .text-muted{color:var(--primary-color);}
+
+  .row{display:grid;gap:22px;}
+  .g-details{grid-template-columns:4fr 5fr;}
+  .g-2{grid-template-columns:1fr 1fr;}
+  @media(max-width:900px){.g-details,.g-2{grid-template-columns:1fr;}}
+
+  /* DETAILS tab top row — 3 equal columns (Account | Penalties | Ranks) */
+  .details-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;}
+  @media(max-width:1100px){.details-top{grid-template-columns:1fr 1fr;}}
+  @media(max-width:760px){.details-top{grid-template-columns:1fr;}}
+  .details-top .card{min-height:100%;}
+
+  .progress{background:var(--card-strong);border-radius:8px;height:16px;overflow:hidden;}
+  .progress .bar{height:100%;background:var(--theme-color-1);border-radius:8px;}
+  .lvl{font-family:'Nunito',sans-serif;font-size:17px;font-weight:400;margin:0 0 10px;color:#8f8f8f;line-height:1.4;}
+  .lvl-xp{font-family:'Nunito',sans-serif;font-size:15px;font-weight:400;color:#8f8f8f;margin:-2px 0 16px;line-height:1.4;}
+
+  /* ============ ITEM CARDS (matches original skin-card / agent-card / other-card) ============ */
+  /* item grids use col-xl-2 -> 6 per row; store uses col-lg-3 -> 4 per row */
+  .grid{display:grid;gap:1.5rem;grid-template-columns:repeat(6,1fr);}
+  @media(max-width:1400px){.grid{grid-template-columns:repeat(5,1fr);}}
+  @media(max-width:1199px){.grid{grid-template-columns:repeat(4,1fr);}}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:420px){.grid{grid-template-columns:1fr;}}
+  .list-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(4,1fr);}
+  @media(max-width:1199px){.list-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:767px){.list-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:520px){.list-grid{grid-template-columns:1fr;}}
+
+  .item{
+    background:var(--foreground-color);border-radius:2px;overflow:hidden;
+    box-shadow:0 1px 15px rgba(0,0,0,.15),0 1px 8px rgba(0,0,0,.15);
+    margin-bottom:1.5rem;
+  }
+  .item .pos{position:relative;height:200px;}            /* skin-card .position-relative height 200px */
+  .item .thumb{width:100%;text-align:center;padding:10px;margin-top:30px;}
+  .item .thumb img{object-fit:contain;height:130px;width:80%;}          /* skin-image 130px/80% */
+  .item .thumb img.wide{object-fit:cover;height:130px;width:100%;}      /* other-image 130px cover */
+  .item .thumb img.tall{object-fit:contain;height:180px;width:80%;
+    filter:drop-shadow(2px 4px 3px #000);}                               /* agent-image 180px */
+  /* price badge — top-right, pill, #aa5e6c bg */
+  .badge-price{
+    position:absolute;top:8px;right:-7px;
+    background:#aa5e6c;color:#d0d0d0;
+    padding:0.55em 1.25em 0.6em;border-radius:50rem;font-size:74%;font-weight:700;
+  }
+  /* tier badge — top-left, pill, transparent w/ icon */
+  .badge-tier{
+    position:absolute;top:12px;left:12px;
+    display:inline-flex;align-items:center;
+    background:transparent;padding:0;
+  }
+  .badge-tier img{height:26px;width:auto;display:block;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.6));}
+  .badge-tier span{display:none;}
+  /* centered footer name */
+  .item .card-footer{text-align:center;padding:0.9rem 1rem;}
+  .item .card-subtitle{margin:0;font-size:15px;font-weight:600;color:var(--primary-color);}
+  .item .card-sub-sub{font-size:12.5px;color:var(--primary-color);margin-top:2px;}
+
+  .empty{border:1px dashed var(--separator-color);border-radius:4px;padding:34px;text-align:center;color:var(--primary-color);font-size:14px;}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:30px 0 14px;}
+  .section-title h3{font-family:'Nunito', sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.5px;margin:0;text-transform:uppercase;color:var(--heading);}
+  .section-title .total{font-size:13px;color:var(--primary-color);font-weight:600;}
+
+  /* header like the original card-title (muted text + divider) */
+  .title-card{
+    background:var(--foreground-color);border-radius:2px;padding:1.4rem 1.4rem 0.2rem;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+    margin-bottom:1.5rem;
+    display:flex;align-items:center;justify-content:space-between;gap:6px 18px;flex-wrap:wrap;
+  }
+  .title-card .title-text{
+    font-size:1.15rem;font-weight:500;color:var(--primary-color);margin:0 0 1rem;
+  }
+  .title-card .title-cur{
+    display:flex;align-items:center;gap:6px;color:var(--heading);font-size:15px;font-weight:400;
+    margin-left:auto;flex-wrap:wrap;justify-content:flex-end;
+  }
+  .title-card .title-cur img{height:30px;width:auto;display:block;}
+  .title-card .title-cur .cur{font-size:14px;font-weight:400;color:var(--primary-color);margin:0 0 0 5px;}
+  .title-card::after{display:block;content:"";flex:0 0 100%;height:0;border-bottom:1px solid var(--separator-color);margin:1.1rem -1.4rem 0.2rem;}
+
+  /* ranks inside the DETAILS top-row card */
+  .rank-inline{display:flex;align-items:center;gap:16px;padding:14px 4px;border-bottom:1px solid var(--separator-color);font-size:.95rem;color:var(--heading);font-weight:400;}
+  .rank-inline:last-child{border-bottom:none;}
+  .rank-inline img{width:50px;height:50px;object-fit:contain;}
+  .rank-inline div{color:#d8d8d8;}
+
+  .currency{display:flex;gap:18px;align-items:center;margin:6px 0 18px;}
+  .coin{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--heading);}
+  .coin span.dot{width:16px;height:16px;border-radius:50%;background:var(--theme-color-1);display:inline-block;}
+
+  .title-list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
+  .title-pill{border:1px solid var(--separator-color);background:var(--foreground-color);border-radius:4px;padding:12px 14px;font-weight:700;font-size:14px;color:var(--heading);}
+
+  /* progressions */
+  .inline-titled{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.4rem;}
+  .inline-titled .card-title{margin:0;padding:0;font-size:1.05rem;font-weight:600;color:var(--primary-color);}
+  .muted-inline{font-size:15px;color:var(--primary-color);font-weight:400;}
+  .empty-h5{width:100%;margin:1.5rem 0 .75rem;text-align:center;color:var(--muted);font-size:1.25rem;font-weight:500;}
+  .empty-card{background:var(--foreground-color);border-radius:2px;padding:1.4rem;box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);margin-bottom:1.5rem;}
+  .mission-list{display:grid;gap:1rem;}
+  .mission-inner{
+    border:1px solid var(--separator-color);border-radius:2px;background:var(--foreground-color);
+    display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.4rem;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+  }
+  .mission-inner .card-title{margin:0;padding:0;font-size:1.05rem;font-weight:600;color:var(--primary-color);}
+  .progress-bar-circle{width:46px;height:46px;}
+  .progress-bar-circle .CircularProgressbar{width:100%;vertical-align:middle;}
+  .progress-bar-circle .CircularProgressbar .trail,.progress-bar-circle .CircularProgressbar .path{fill:none;}
+  .progress-bar-circle .CircularProgressbar path{transition:stroke-dashoffset .5s ease 0s;}
+  .progress-bar-circle .CircularProgressbar text{font-size:20px!important;fill:#8f8f8f;font-family:Nunito,sans-serif;font-weight:400;}
+
+  /* titles tab: block card with centered red title + "<name> Title" footer */
+  .grid-titles .item .pos{height:120px;padding:18px 12px;display:flex;align-items:center;justify-content:center;}
+  .title-block{font-size:15px;font-weight:700;color:var(--theme-color-1);text-align:center;}
+  .title-suffix{color:var(--primary-color);font-weight:400;}
+
+  .mission{border:1px solid var(--separator-color);background:var(--foreground-color);border-radius:4px;padding:16px;}
+  .mission .m-title{font-weight:700;margin-bottom:10px;color:var(--heading);}
+  .mission .m-pct{font-size:20px;font-weight:800;color:var(--theme-color-1);}
+
+  footer{padding:40px 22px;text-align:center;color:var(--primary-color);font-size:13px;}
+
+  /* a small hint box at the top of the page (you can delete this whole .howto div) */
+  .howto{background:var(--foreground-color);border-left:3px solid var(--theme-color-1);border-radius:2px;padding:14px 16px;font-size:13px;color:var(--primary-color);margin:0 0 24px;}
+  .howto b{color:var(--heading);}
+  .howto code{color:var(--theme-color-1);}
+</style>
+</head>
+<body>
+
+  <!-- ============ TOP NAVBAR ============ -->
+  <nav class="navbar">
+    <div class="navbar-left"><button class="join-btn">Join Explorants Community !</button></div>
+    <a class="navbar-logo" href="#"><img class="brand" src="data:image/png;base64,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" alt="Logo" /></a>
+    <div class="navbar-right"><div class="user"><span class="name">Become an Explorant</span><img class="ava-img" src="data:image/png;base64,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o+ysudhZjPuSFDWnco7VgR3uJYrlkXgcu5J03qRjsjpDNO/mOba8lHclTHeRowDrBC0xANzZ1472cBDeRBwbe1sREXzwzYKnEaXzfTLTqm2REO5MMqWBaN8L3YL5jfeM9GJcMIb17SIXHi2vVV3Tt8pRiBcXLRX2Jr40NoAuDeobgWOD/hu6WxAVhGCdyikLak0WbHcp538BgBdG+rB33HPi58mOjGzYO+7BT0bV3U+50C2YwHkTcWxJMjfKNwrLsW/xmbjCWZL0+XLVRjOectVjd1WjcEKgjnAQT8/izoNUPgr5hbNjATNXZ1h1Oux2NwqHUz4O+vHoUKdiebKODBkeHDiCz4LajDPOZwtq3vC94x40D3Zis+A0ssFsw7bKekTjcfwh6EdHJIihWBTVRjOWWu1oSNFjNxqL4vruQ2lPnafG86P9+IItTzF2NlN1RrOrXvi4L080gvXdLUh2pJv72rHMYp+zu76TiQK4qacV/157BvJP4enqF0wLN2mHpw+PphjUNer1WG53Ym1BGTYUV+LS/JKUYRuMRvDNzoOajOkls7mvHa2hCcXyyeqM6a4tKBMObscTCdzS25a0Kgf4S0eG1vOEqNETDWOThtMvzEcLLnAA8E+j/fhO1yH4MpyeYP/EOC49cgCHZ7hfL1PBRALrelrgFxzvFQWlU6Z1a7LYsbVMXCiwbahL1SS5bZEQNvdlp8TqvYA3adXQqWBBBg4AfhPw4qKOP+GNJI+9SuVIOIgtve34RudBTYqJVe0zxaD4wxV1ON1sQ2GKuU/e8nnSmkpi77gHL6mc4EhrzYOdwmGRU4GiePnNN99EWdlf7k/zeb0YHR2VfVyaGIlFcUffn/G8px+rncW40FGAZUnm2uiJhPCOfwzv+sfwjn806TVQMr/1j6Fg2gNK0q1Ieds/hk09rbiqoAzGaZ07lzqLcTQSxJFISHFj7VA0jHuTzAmTyvcHOmGGXvEY5/9LEoaDoQAqAlM7cmYTnIROh/U9LXi0ok7xUJd0S74+DfrxQWBqq/6eYKA/V+jq6+qyOrj/RZsTP61eOuN6Hwa8uKrrUMb7MwIoN5pRbDDCqNNh+Pi8l2qnNCfKxCnXXRTFsYt3LeYLIUrXgr2GI8pFWQ+c2rEtLSdEJcqWrAfuYCiADsEY1HRvztG9W0QyZT1wAHBD92EcSFL244tF8eRQF36RpZIkIi1lvZeS6FSSEy0c0amCgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOSiIEjkoiBI5KIgSOS6P8BLgZpYuoXRngAAAAASUVORK5CYII=" alt=""/></div></div>
+  </nav>
+
+  <main>
+    <h1 class="account-name">MY&nbsp;ARSENAL<small>gun collection tracker</small></h1>
+
+    <div class="howto" id="howto"></div>
+
+    <!-- ============ TABS ============ -->
+    <nav class="tabs" id="tabs"></nav>
+
+    <!-- ============ PANES (render into these) ============ -->
+    <section class="pane active" data-pane="details">
+      <div class="details-top">
+        <!-- col 1: Account card with banner image -->
+        <div class="card">
+          <div class="card-img-top" id="banner"></div>
+          <div class="card-body">
+            <div class="card-title">Account Info<hr/></div>
+            <div class="row g-2" style="margin-top:14px;grid-template-columns:1fr 1fr;">
+              <div id="infoCol"></div>
+              <div id="levelCol"></div>
+            </div>
+          </div>
+        </div>
+        <!-- col 2: Recent Penalties -->
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">Recent Penalties<hr/></div>
+            <div id="penalties" style="margin-top:14px;"></div>
+          </div>
+        </div>
+        <!-- col 3: Ranks -->
+        <div class="card">
+          <div class="card-body">
+            <div class="card-title">Ranks<hr/></div>
+            <div class="ranks-inline" id="ranks" style="margin-top:14px;"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="pane" data-pane="store">
+      <div class="title-card">
+        <div class="title-text">Daily Store</div>
+        <div class="title-cur" id="dailyCur"></div>
+      </div>
+      <div class="list-grid" id="dailyStore" data-empty="Store Skins Not Fetched Yet. Please Ask Owner to Refresh Account"></div>
+      <div class="title-card"><div class="title-text">Accessory Store</div><div class="title-cur"></div></div>
+      <div class="list-grid" id="accessoryStore" data-empty="Accessory Skins Not Fetched Yet. Please Ask Owner to Refresh Account"></div>
+      <div class="title-card"><div class="title-text">Night Market</div></div>
+      <div class="empty-h5">No Night Market Skins to Show</div></div>
+    </section>
+
+    <section class="pane" data-pane="weapons">
+      <div class="title-card"><div class="title-text">Weapon Skins</div><div class="title-cur" id="weaponValue"></div></div>
+      <div class="grid" id="weaponGrid"></div>
+    </section>
+
+    <section class="pane" data-pane="battlepass">
+      <div class="title-card"><div class="title-text">Battlepasses</div><div class="title-cur" id="bpValue"></div></div>
+      <div class="empty-card" id="bpBody"><div class="empty-h5">No Battlepasses to Show</div></div>
+    </section>
+
+    <section class="pane" data-pane="agents">
+      <div class="title-card"><div class="title-text">Agents</div><div class="title-cur" id="agentValue"></div></div>
+      <div class="grid" id="agentGrid"></div>
+    </section>
+
+
+    <section class="pane" data-pane="buddies">
+      <div class="title-card"><div class="title-text">Gun Buddies</div></div>
+      <div class="grid" id="buddyGrid"></div>
+    </section>
+
+    <section class="pane" data-pane="cards">
+      <div class="title-card"><div class="title-text">Account Cards</div></div>
+      <div class="grid" id="cardGrid"></div>
+    </section>
+
+    <section class="pane" data-pane="sprays">
+      <div class="title-card"><div class="title-text">Account Sprays</div></div>
+      <div class="grid" id="sprayGrid"></div>
+    </section>
+
+    <section class="pane" data-pane="flexes">
+      <div class="title-card"><div class="title-text">Account Flexes</div></div>
+      <div class="empty-h5" id="flexes">No Flexes to Show</div>
+    </section>
+
+    <section class="pane" data-pane="titles">
+      <div class="title-card"><div class="title-text">Account Titles</div></div>
+      <div class="grid grid-titles" id="titleList"></div>
+    </section>
+
+    <section class="pane" data-pane="progressions">
+      <div class="title-card"><div class="title-text">Progressions</div></div>
+
+      <!-- Next First Win / Next Weekly Missions (two half-width inline cards) -->
+      <div class="row g-2" style="margin-bottom:1.5rem;">
+        <div class="card"><div class="card-body inline-titled">
+          <div class="card-title">Next First Win</div><div class="muted-inline" id="nextFirstWin"></div>
+        </div></div>
+        <div class="card"><div class="card-body inline-titled">
+          <div class="card-title">Next Weekly Missions</div><div class="muted-inline" id="nextWeekly"></div>
+        </div></div>
+      </div>
+
+      <!-- Daily Missions -->
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-body">
+          <div class="card-title">Daily Missions<hr/></div>
+          <div class="empty-h5">No Daily Missions</div>
+        </div>
+      </div>
+
+      <!-- Weekly Missions with circular progress -->
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">Weekly Missions<hr/></div>
+          <div class="mission-list" id="missionList"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+<script>
+/* =====================================================================================
+   ███████╗██████╗ ██╗████████╗     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄
+   ██╔════╝██╔══██╗... edit everything in this block only ...
+   ===================================================================================== */
+
+/* Exact banner image (embedded so it always shows) */
+const BANNER = "data:image/jpeg;base64,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";
+
+/* 1. ACCOUNT INFO — shown on the DETAILS tab */
+const ACCOUNT = {
+  nickname: "VANTA",
+  title:    "Sunkissed",
+  region:   "eu",
+  country:  "pak",
+  level:        170,
+  levelNow:     1711,
+  levelMax:     5000,
+  totalValue:   12650,
+  banner: BANNER
+};
+
+/* (Daily Store removed from page; CURRENCIES kept for reference) */
+const CURRENCIES = [
+  { label: "VP", amount: 1850, color: "#dd3f4c" },
+  { label: "RP", amount: 45,   color: "#7bdcff" },
+];
+
+/* 3. RANKS on the DETAILS tab.
+   Each rank shows a badge image + name, exactly like the original rank list.
+   icon = the real rank badge image URL. */
+const RANKS = [
+  { name: "V26 - ACT IV",  icon: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png" },
+  { name: "V26 - ACT III", icon: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/21/largeicon.png" },
+  { name: "V26 - ACT II",  icon: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png" },
+  { name: "V26 - ACT I",   icon: "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/16/largeicon.png" },
+];
+
+/* 4. TITLES list */
+const TITLES = ["The Collector","Sweaty","Duality","All Gas","Overheating","From the Grave",
+                "Horsepower","Recruit","Tea","No Shot","GOOOOALLLL!!!","Six Seven",
+                "Big Guy","Squad","Flaming Steed","Gnarly","Performative","Unc"];
+
+/* 5. PROGRESSIONS / missions */
+const MISSIONS = [
+  { name: "Play A Match",                   percent: 0   },
+  { name: "Purchase Items from the Armory", percent: 0.5 },
+  { name: "Play Rounds Or Stages",          percent: 1   },
+];
+const NEXT_FIRST_WIN = "Available";
+const NEXT_WEEKLY    = "Tue 11-Aug-2026 8:15 AM";
+
+/* ----------------------------------------------------------------------------------
+   6. THE ITEM COLLECTIONS
+   Each tab fills from the matching array below.
+
+   Each item = { name, tier, price, img, shape, sub }
+     name   : label shown on the card
+     tier   : "Select" | "Deluxe" | "Premium" | "Exclusive" | "Rare" | "Rarer" | "Ultra"
+     price  : value (number) — shown as "NNNN VP". Set 0 to hide it.
+     img    : image URL. Leave it out to draw a gun silhouette instead.
+     shape  : "wide" for banner-style images (agent portraits, cards). Omit otherwise.
+     sub    : optional small extra line under the name.
+
+   ★ HELPER — add ANY stored weapon easily! The weapon-skin image URLs all follow
+     https://media.valorant-api.com/weaponskinlevels/{UUID}/displayicon.png
+   So to add a skin you own, just paste its UUID:
+        newGun("4e435234-49a2-1444-4640-908692c855b8", "RGX 11z Pro Vandal", "Exclusive", 2175)
+   You can find a skin's UUID at https://valorant-api.com/v1/weaponskinlevels (or search its name).
+   ---------------------------------------------------------------------------------- */
+function newGun(uuid, name, tier, price){
+  return { name:name, tier:tier||"Select", price:price||0,
+           img:"https://media.valorant-api.com/weaponskinlevels/"+uuid+"/displayicon.png" };
+}
+
+/* ------------------------- WEAPON SKINS ------------------------- */
+const GUNS = [
+  newGun("5ac106cd-45ef-a26f-2058-f382f20c64db", "Reaver Karambit",        "Exclusive", 4350),
+  newGun("4e435234-49a2-1444-4640-908692c855b8", "RGX 11z Pro Vandal",      "Exclusive", 2175),
+  newGun("3abfabeb-40d5-3aa2-0509-5d929b5bf1b3", "Reaver Phantom",         "Premium",   1775),
+  newGun("c4422d16-4cb1-75d5-fd18-dda0bb05f46b", "Gaia's Vengeance Vandal", "Premium",   1775),
+  newGun("d8606d62-4a88-39d6-4e65-3993b0f3f9b2", "Soulburst Phantom",      "Select",    875),
+  newGun("19850f93-4728-f4ef-1bed-ed88e933d60d", "Montage Frenzy",         "Deluxe",    1275),
+  /* ---- to add your own, append lines like:
+  newGun("PASTE-UUID-HERE", "My Cool Skin", "Exclusive", 2475),
+  * ---- to remove one, just delete / comment out its line */
+];
+/* The total value shown at the top of this tab is AUTO-CALCULATED from the prices above. */
+
+/* ------------------------- DAILY STORE ------------------------- */
+const STORE = [
+  newGun("fd8e368e-4c29-b7da-eca4-78ad591d9b5c", "Smite Ghost",         "Select", 875),
+  newGun("bbc68d13-42b8-6f2c-d5b2-e79c291677c5", "Undercity Phantom",   "Premium", 1775),
+  newGun("70538fc5-4f2f-8603-3175-37a45cf90a28", "Mystbloom Judge",     "Exclusive", 2175),
+  newGun("99b56bab-42cc-fd50-8604-6995bebd011f", "Mystbloom Operator",  "Exclusive", 2175),
+];
+
+/* ------------------------- ACCESSORY STORE ------------------------- */
+const ACCESSORY = [
+  { name:"Home Again // Viper Card", tier:"Rare", price:4500,
+    img:"https://media.valorant-api.com/playercards/54b766d3-49c1-367f-d82a-bca58dd3e6ce/smallart.png", shape:"wide" },
+  { name:"Bound Card",  tier:"Rare", price:4500,
+    img:"https://media.valorant-api.com/playercards/771c867f-4c0f-e19b-8a96-8faa10d7ba72/smallart.png", shape:"wide" },
+  { name:"No Escape Spray", tier:"Rare", price:4000,
+    img:"https://media.valorant-api.com/sprays/d32c43b5-42bb-8726-55b9-439c877df97a/displayicon.png" },
+  { name:"Signature Spray", tier:"Rare", price:4000,
+    img:"https://media.valorant-api.com/sprays/c11f8e1e-4024-4678-594e-a7b8385de3fb/displayicon.png" },
+];
+
+/* ------------------------- BATTLEPASSES (leave empty to show "none") ------------------------- */
+const BATTLEPASSES = [];
+var BP_TOTAL = 0;
+
+/* ------------------------- AGENTS ------------------------- */
+const AG = "https://media.valorant-api.com/agents/";
+const AGENTS = [
+  { name:"Jett",    tier:"Duelist",    price:0, img:AG+"add6443a-41bd-e414-f6ad-e58d267f4e95/fullportrait.png", type:"agent" },
+  { name:"Reyna",   tier:"Duelist",    price:0, img:AG+"a3bfb853-43b2-7238-a4f1-ad90e9e46bcc/fullportrait.png", type:"agent" },
+  { name:"Raze",    tier:"Duelist",    price:0, img:AG+"f94c3b30-42be-e959-889c-5aa313dba261/fullportrait.png", type:"agent" },
+  { name:"Sage",    tier:"Sentinel",   price:0, img:AG+"569fdd95-4d10-43ab-ca70-79becc718b46/fullportrait.png", type:"agent" },
+  { name:"Cypher",  tier:"Sentinel",   price:0, img:AG+"117ed9e3-49f3-6512-3ccf-0cada7e3823b/fullportrait.png", type:"agent" },
+  { name:"Omen",    tier:"Controller", price:0, img:AG+"8e253930-4c05-31dd-1b6c-968525494517/fullportrait.png", type:"agent" },
+  { name:"Killjoy", tier:"Sentinel",   price:0, img:AG+"1e58de9c-4950-5125-93e9-a0aee9f98746/fullportrait.png", type:"agent" },
+  { name:"Viper",   tier:"Controller", price:0, img:AG+"707eab51-4836-f488-046a-cda6bf494859/fullportrait.png", type:"agent" },
+  { name:"Phoenix", tier:"Duelist",    price:0, img:AG+"eb93336a-449b-9c1b-0a54-a891f7921d69/fullportrait.png", type:"agent" },
+];
+const AGENT_TOTAL = 0;
+
+/* ------------------------- BUDDIES ------------------------- */
+const BD = "https://media.valorant-api.com/buddies/";
+const BUDDIES = [
+  { name:"Protocol Dummy Buddy",   tier:"Rare", price:0, img:BD+"acfd6c31-4786-6059-b93a-d49a8c23e2f6/displayicon.png" },
+  { name:"Tactibear Buddy",        tier:"Rare", price:0, img:BD+"752e1f60-4482-7f1f-a9d5-6d84ffece260/displayicon.png" },
+  { name:"H2-Oh! Buddy",           tier:"Rare", price:0, img:BD+"21180071-452a-2c30-a041-07923e53933a/displayicon.png" },
+  { name:"VALORANT Coin Buddy",    tier:"Rare", price:0, img:BD+"ac72bb9a-4368-8502-5dac-698d72021c81/displayicon.png" },
+  { name:"Strawberry Lippie Buddy",tier:"Rare", price:0, img:BD+"228bcacd-49d6-66a2-746a-8b8c1ae68669/displayicon.png" },
+  { name:"Nest Egg Buddy",         tier:"Rare", price:0, img:BD+"89ac98ec-495d-680b-22cb-d3afe04eae6e/displayicon.png" },
+];
+
+/* ------------------------- CARDS ------------------------- */
+const PC = "https://media.valorant-api.com/playercards/";
+const CARDS = [
+  { name:"Playzilla Tactibunny Card",  tier:"Rare", price:0, img:PC+"a78feb94-4e1f-e845-c253-c182d92db9ef/smallart.png", shape:"wide" },
+  { name:"Horse Brings The Luck Card", tier:"Rare", price:0, img:PC+"5b338357-4ee4-b112-a050-bcbf542ad9ba/smallart.png", shape:"wide" },
+  { name:"Epilogue: Bomb Buddy Card",  tier:"Rare", price:0, img:PC+"ad81a15f-4725-b75f-0c8c-519aa97ed3b6/smallart.png", shape:"wide" },
+  { name:"Paintbrush Tactics Card",    tier:"Rare", price:0, img:PC+"213c4c4a-44e6-12a5-6ab2-ae8282e93e57/smallart.png", shape:"wide" },
+  { name:"Tactidance Card",            tier:"Rare", price:0, img:PC+"42d080df-41c6-4c11-ab17-948cb440bf6c/smallart.png", shape:"wide" },
+  { name:"Odin Magazine Card",         tier:"Rare", price:0, img:PC+"2295a71b-4a6e-2b5b-6c22-539e376f6fa2/smallart.png", shape:"wide" },
+];
+
+/* ------------------------- SPRAYS ------------------------- */
+const SP = "https://media.valorant-api.com/sprays/";
+const SPRAYS = [
+  { name:"On Your Feet Spray",   tier:"Rare", price:0, img:SP+"cad8fddd-4297-cde3-8130-77b1a2731a27/displayicon.png" },
+  { name:"V for VALORANT Spray", tier:"Rare", price:0, img:SP+"5d88fd45-434d-b0d6-2331-e8b3d47b8395/displayicon.png" },
+  { name:"Acorn Ops Spray",      tier:"Rare", price:0, img:SP+"7be05688-4141-f625-3990-c3933cdbaebd/displayicon.png" },
+  { name:"TactiForce: Go! Spray",tier:"Rare", price:0, img:SP+"c4b5f5e7-453f-039f-1782-cbbb12db7ae7/displayicon.png" },
+  { name:"Red Fortunes Spray",   tier:"Rare", price:0, img:SP+"8da459cc-40ce-50d5-d2dd-dfa66503c293/displayicon.png" },
+  { name:"GLHF Spray",           tier:"Rare", price:0, img:SP+"6983ae7c-4cb5-835c-8f62-b7affbaae20e/displayicon.png" },
+];
+
+/* ------------------------- FLEXES (empty = "none") ------------------------- */
+const FLEXES = [];
+
+/* =====================================================================================
+   ██████╗ ███████╗███╗   ██╗██████╗ ███████╗██████╗ ███████╗██████╗
+   end of the editable block — the renderer below runs automatically. Scroll no further.
+   ===================================================================================== */
+
+/* ---- the tab bar (add/remove tab *labels* here if you want extra tabs) ---- */
+const TABS = [
+  { id:"details",      label:"DETAILS" },
+  { id:"store",        label:"STORE" },
+  { id:"weapons",      label:"WEAPON SKINS" },
+  { id:"battlepass",   label:"BATTLEPASSES" },
+  { id:"agents",       label:"AGENTS" },
+  { id:"buddies",      label:"BUDDIES" },
+  { id:"cards",        label:"CARDS" },
+  { id:"sprays",       label:"SPRAYS" },
+  { id:"flexes",       label:"FLEXES" },
+  { id:"titles",       label:"TITLES" },
+  { id:"progressions", label:"PROGRESSIONS" },
+];
+
+/* ---- (standalone) hydration: render a selected user if one was chosen ---- */
+(function(){
+  try{
+    var __sel = {"username": "ln1","password": "","name": "ln1","title": "Six Seven","region": "eu","country": "tur","level": 88,"levelNow": 2281,"levelMax": 5000,"totalValue": 26070,"banner": "https://media.valorant-api.com/playercards/c5d4cd0b-49fa-0b9c-55c7-9b828f83413f/wideart.png","ranks": [{"name": "V26 - ACT IV","icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/15/largeicon.png"},{"name": "V26 - ACT III","icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/19/largeicon.png"},{"name": "V26 - ACT II","icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png"},{"name": "V26 - ACT I","icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/14/largeicon.png"},{"name": "V25 - ACT VI","icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/14/largeicon.png"}],"skins": [{"name": "VCT 2026 Sigil","tier": "Exclusive","price": 5350,"img": "https://media.valorant-api.com/weaponskinlevels/fb970da4-4f6a-5cb6-a484-1abf95e6f12d/displayicon.png"},{"name": "Kuronami Vandal","tier": "Exclusive","price": 2375,"img": "https://media.valorant-api.com/weaponskinlevels/636c1f83-44f7-6bc4-0b24-88a1beb66c2d/displayicon.png"},{"name": "VCT26 x SEN Classic","tier": "Exclusive","price": 2320,"img": "https://media.valorant-api.com/weaponskinlevels/d1e82c9f-4f17-ab19-680a-5890365c2241/displayicon.png"},{"name": "Singularity Vandal","tier": "Exclusive","price": 2175,"img": "https://media.valorant-api.com/weaponskinlevels/56c5c2cf-4213-6d98-f5d0-79954573930c/displayicon.png"},{"name": "Primordium Vandal","tier": "Exclusive","price": 2175,"img": "https://media.valorant-api.com/weaponskinlevels/8820f9c1-43d3-55eb-f15a-53abaac6f49e/displayicon.png"},{"name": "Neo Frontier Sheriff","tier": "Exclusive","price": 2175,"img": "https://media.valorant-api.com/weaponskinlevels/d9f04b7a-4ca6-1083-3af4-e3810bf15440/displayicon.png"},{"name": "Mystbloom Phantom","tier": "Exclusive","price": 2175,"img": "https://media.valorant-api.com/weaponskinlevels/284aea8b-43b6-e5fe-686f-00b58ec2b17a/displayicon.png"},{"name": "Recon Phantom","tier": "Premium","price": 1775,"img": "https://media.valorant-api.com/weaponskinlevels/5be0b43b-4e66-ab8a-91d9-be9137e2e1c2/displayicon.png"},{"name": "Ayakashi Phantom","tier": "Exclusive","price": 1775,"img": "https://media.valorant-api.com/weaponskinlevels/27acfa4d-4c6e-5f16-496e-f7baad3e00e0/displayicon.png"},{"name": "Reaver Operator","tier": "Premium","price": 1775,"img": "https://media.valorant-api.com/weaponskinlevels/7bfab387-4e97-d815-4488-c491e3a5520c/displayicon.png"},{"name": "Heartseeker Phantom","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/5ce06154-47dc-3a1d-41a4-34a32f5c111c/displayicon.png"},{"name": "Dragon Gate Ares","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/ed3fcae2-403a-2fa7-4c9b-889b4d70c40d/displayicon.png"},{"name": "Soulburst Spectre","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/b4de462b-45f2-61ea-c3e3-f49e35b5bd7d/displayicon.png"},{"name": "Heartbreaker Operator","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/369d25dc-46ab-dbdb-7f90-d197508acaf6/displayicon.png"},{"name": "Heartseeker Shorty","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/836d69fe-4a12-e316-5754-5a8fb3992474/displayicon.png"},{"name": "Heartbreaker Sheriff","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/c162dc88-4a08-79bd-664a-e38ca7d7bab0/displayicon.png"},{"name": "Soulburst Bandit","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/d8606d62-4a88-39d6-4e65-3993b0f3f9b2/displayicon.png"},{"name": "Heartbreaker Odin","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/5665d2db-49f3-4b39-eebf-62a5af424308/displayicon.png"},{"name": "Paceline Guardian","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/26d6aaa9-4b61-763d-bf35-f88773d4c86b/displayicon.png"},{"name": "Paceline Stinger","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/77acb671-4260-d01b-a5eb-bbb17b52d7fd/displayicon.png"},{"name": "Heartbreaker Bulldog","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/4504f23a-4d92-0587-485e-35951402eeda/displayicon.png"},{"name": "Keys to Elysium Sheriff","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/a7547ee3-4143-a99c-d23c-11961c4336bd/displayicon.png"},{"name": "Heartseeker Guardian","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/60ad6389-4c4e-f6d0-7fae-8c8234fe7418/displayicon.png"},{"name": "Montage Frenzy","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/19850f93-4728-f4ef-1bed-ed88e933d60d/displayicon.png"},{"name": "Soulburst Bulldog","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/5f0ecd25-464c-f8d1-5e72-e0922da5b311/displayicon.png"},{"name": "Dragon Gate Shorty","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/9bf87c46-462c-ce18-ccd4-c7be8c27124f/displayicon.png"},{"name": "Dragon Gate Judge","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/9a224aac-4541-4eeb-68e9-adb3f8da6fbc/displayicon.png"},{"name": "Paceline Vandal","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/776d2b8c-4ea4-8357-c3f5-abb2a9cf3898/displayicon.png"},{"name": "Paceline's Edge","tier": "Exclusive","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/9ce8ad00-477c-4103-f1b9-1a9b21d07899/displayicon.png"},{"name": "Heartstopper Ghost","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/13f02678-40bc-c4ba-8636-9082733e8dc0/displayicon.png"},{"name": "Paceline Frenzy","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/5a993777-400e-0d61-e351-eb98652ac9d3/displayicon.png"},{"name": "Heartseeker Outlaw","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/9f796ae3-491d-28dc-1beb-9bb81a5e231a/displayicon.png"},{"name": "Heartseeker Stinger","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/e9ed9118-4cb0-3548-580a-c39c0d11a8d9/displayicon.png"},{"name": "Soulburst Outlaw","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/fc793b9e-4644-0b7f-8240-47818532bb3d/displayicon.png"},{"name": "Heartstopper Vandal","tier": "Deluxe","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/d33f3dff-4631-d550-4745-458ba2e2900e/displayicon.png"},{"name": "Dragon Gate Phantom","tier": "Select","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/e818895a-41fe-9c4d-2fa9-6598efd21275/displayicon.png"},{"name": "Heart Splitter","tier": "Exclusive","price": 0,"img": "https://media.valorant-api.com/weaponskinlevels/5da259d7-4714-2b0d-7663-3b89310dab62/displayicon.png"}],"buddies": [{"name": "V25 ACT VI Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/d27bee0c-47bd-db44-4a06-0e9be602a9e8/displayicon.png"},{"name": "Happy Petal Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/3bff23db-431e-8ef3-476f-39b5d90c89b2/displayicon.png"},{"name": "V25A6: Gold Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/78c4cd56-43ee-96c5-06f8-eeb81f30181d/displayicon.png"},{"name": "Student TactiBear Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/542bbefc-4f38-02f8-2a2c-42bd4d4170f2/displayicon.png"},{"name": "Nest Egg Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/89ac98ec-495d-680b-22cb-d3afe04eae6e/displayicon.png"},{"name": "Heartbreaker Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/1bf92981-42da-5148-6be2-bfbddf7a9818/displayicon.png"},{"name": "Shock & Roll Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f95bee22-4015-efde-9349-4bb455c1b702/displayicon.png"},{"name": "Fresh Frags Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/e54d445d-4c1b-2c90-35fa-61be5770a5b9/displayicon.png"},{"name": "V26 ACT I Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/9cd37dd1-4a3c-6b6d-5683-4c9a6ec008e6/displayicon.png"},{"name": "Ult Bias: Jett Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/71a62d6c-4515-044d-0c86-47af6f3d3c8f/displayicon.png"},{"name": "Happy Petal Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/3bff23db-431e-8ef3-476f-39b5d90c89b2/displayicon.png"},{"name": "Soulburst Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/7a22dad5-49f3-7404-744e-1590aa49dff8/displayicon.png"},{"name": "V26A3: Diamond Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/7f87473c-4e73-ff52-7cd8-58a4085f630a/displayicon.png"},{"name": "Super Saver Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/c39e4abb-47bd-3d9f-7f7a-a8a87213672f/displayicon.png"},{"name": "V25 ACT V Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/d35dda28-4912-24af-3c72-b4adf236b537/displayicon.png"},{"name": "Keep it Safer Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/c14745d0-4958-26d9-60e6-7c863080fef1/displayicon.png"},{"name": "Fresh Frags Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/e54d445d-4c1b-2c90-35fa-61be5770a5b9/displayicon.png"},{"name": "Ult Bias: Jett Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/71a62d6c-4515-044d-0c86-47af6f3d3c8f/displayicon.png"},{"name": "Binding Thread Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f74a8f8a-44a6-583f-d517-21b7d6a35d4d/displayicon.png"},{"name": "Fa Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/fee36e9f-4136-4d78-9ea4-fd8f89fa040a/displayicon.png"},{"name": "Strawberry Lippie Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/228bcacd-49d6-66a2-746a-8b8c1ae68669/displayicon.png"},{"name": "Duck Chillin' Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/ab361eac-4cc7-c896-b3ae-0e8a17a97e14/displayicon.png"},{"name": "Ult Bias: Yoru Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/2fced8c3-40d1-997a-9b4e-39a15db65ed1/displayicon.png"},{"name": "V26 ACT I Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/9cd37dd1-4a3c-6b6d-5683-4c9a6ec008e6/displayicon.png"},{"name": "Strawberry Lippie Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/228bcacd-49d6-66a2-746a-8b8c1ae68669/displayicon.png"},{"name": "Lethal Dose Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/84693baf-4a2f-8f25-7091-f3868bc430f8/displayicon.png"},{"name": "Epilogue: 5 Years: Beads Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/0854b92d-4b95-7bbf-c3c0-4986c84afdc0/displayicon.png"},{"name": "Epilogue: Protocol Dummy Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/acfd6c31-4786-6059-b93a-d49a8c23e2f6/displayicon.png"},{"name": "Student TactiBear Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/542bbefc-4f38-02f8-2a2c-42bd4d4170f2/displayicon.png"},{"name": "V25 ACT V Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/d35dda28-4912-24af-3c72-b4adf236b537/displayicon.png"},{"name": "Paceline Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/e5b58dea-4c01-58af-c67e-b48a585d2d18/displayicon.png"},{"name": "H2-Oh! Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/21180071-452a-2c30-a041-07923e53933a/displayicon.png"},{"name": "Epilogue: Night Regent Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/66118783-462e-165c-fff7-768bb9a4d8cf/displayicon.png"},{"name": "V26 ACT II Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/5dcc7d9e-4ef4-2189-698d-539e6257ea9e/displayicon.png"},{"name": "V26 ACT IV Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/5a2e9133-4625-8197-0285-63b9c5ce9466/displayicon.png"},{"name": "V26 ACT IV Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/5a2e9133-4625-8197-0285-63b9c5ce9466/displayicon.png"},{"name": "Boom-Bola Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/21dea727-4b7a-a6e5-b9b5-af8a17a1ba89/displayicon.png"},{"name": "Ult Bias: Iso Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f609e15e-4cf4-af19-7488-b88886298750/displayicon.png"},{"name": "5 Years: Beads Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f4599250-454f-b027-282b-b0b5e972c6db/displayicon.png"},{"name": "Ult Bias: Yoru Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/2fced8c3-40d1-997a-9b4e-39a15db65ed1/displayicon.png"},{"name": "5 Years: Beads Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f4599250-454f-b027-282b-b0b5e972c6db/displayicon.png"},{"name": "Epilogue: Super Saver Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/8fd7deb8-4696-6452-aa4d-7cb35efacd69/displayicon.png"},{"name": "VALORANT Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/ac72bb9a-4368-8502-5dac-698d72021c81/displayicon.png"},{"name": "V26 ACT II Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/5dcc7d9e-4ef4-2189-698d-539e6257ea9e/displayicon.png"},{"name": "Dragon Gate Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/3d86f44a-4c85-dd03-4429-31b6409f3300/displayicon.png"},{"name": "Epilogue: Super Saver Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/8fd7deb8-4696-6452-aa4d-7cb35efacd69/displayicon.png"},{"name": "Fa Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/fee36e9f-4136-4d78-9ea4-fd8f89fa040a/displayicon.png"},{"name": "Last Light Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/da5e2770-4b11-6c60-b468-979d0942b386/displayicon.png"},{"name": "V25A6: Gold Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/78c4cd56-43ee-96c5-06f8-eeb81f30181d/displayicon.png"},{"name": "Lethal Dose Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/84693baf-4a2f-8f25-7091-f3868bc430f8/displayicon.png"},{"name": "Boom-Bola Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/21dea727-4b7a-a6e5-b9b5-af8a17a1ba89/displayicon.png"},{"name": "V26 ACT III Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/996795a4-408a-0e71-2e23-5ea4aeecf76b/displayicon.png"},{"name": "Super Saver Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/c39e4abb-47bd-3d9f-7f7a-a8a87213672f/displayicon.png"},{"name": "V26 ACT III Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/996795a4-408a-0e71-2e23-5ea4aeecf76b/displayicon.png"},{"name": "Heartbreaker Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/1bf92981-42da-5148-6be2-bfbddf7a9818/displayicon.png"},{"name": "Dragon Gate Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/3d86f44a-4c85-dd03-4429-31b6409f3300/displayicon.png"},{"name": "Heartstopper Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/bc4ed542-484d-1766-84df-46948a390bec/displayicon.png"},{"name": "Ult Bias: Iso Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f609e15e-4cf4-af19-7488-b88886298750/displayicon.png"},{"name": "V25 ACT VI Coin Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/d27bee0c-47bd-db44-4a06-0e9be602a9e8/displayicon.png"},{"name": "Binding Thread Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f74a8f8a-44a6-583f-d517-21b7d6a35d4d/displayicon.png"},{"name": "Epilogue: Night Regent Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/66118783-462e-165c-fff7-768bb9a4d8cf/displayicon.png"},{"name": "Paceline Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/e5b58dea-4c01-58af-c67e-b48a585d2d18/displayicon.png"},{"name": "Heartseeker Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/a53b80ff-4f51-d8a2-89a6-daa8f1122704/displayicon.png"},{"name": "Shock & Roll Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/f95bee22-4015-efde-9349-4bb455c1b702/displayicon.png"},{"name": "Duck Chillin' Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/ab361eac-4cc7-c896-b3ae-0e8a17a97e14/displayicon.png"},{"name": "Orange Juice Dreams Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/814acc56-4cc0-f896-7751-9494b27f2b7c/displayicon.png"},{"name": "Epilogue: 5 Years: Beads Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/0854b92d-4b95-7bbf-c3c0-4986c84afdc0/displayicon.png"},{"name": "Epilogue: Protocol Dummy Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/acfd6c31-4786-6059-b93a-d49a8c23e2f6/displayicon.png"},{"name": "Last Light Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/da5e2770-4b11-6c60-b468-979d0942b386/displayicon.png"},{"name": "V26A3: Diamond Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/7f87473c-4e73-ff52-7cd8-58a4085f630a/displayicon.png"},{"name": "H2-Oh! Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/21180071-452a-2c30-a041-07923e53933a/displayicon.png"},{"name": "Orange Juice Dreams Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/814acc56-4cc0-f896-7751-9494b27f2b7c/displayicon.png"},{"name": "Heartstopper Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/bc4ed542-484d-1766-84df-46948a390bec/displayicon.png"},{"name": "Nest Egg Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/89ac98ec-495d-680b-22cb-d3afe04eae6e/displayicon.png"},{"name": "Heartseeker Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/a53b80ff-4f51-d8a2-89a6-daa8f1122704/displayicon.png"},{"name": "Soulburst Buddy","tier": "","price": 0,"img": "https://media.valorant-api.com/buddies/7a22dad5-49f3-7404-744e-1590aa49dff8/displayicon.png"}],"cards": [{"name": "5 Years: Ade On Keys Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/aca81da3-437e-d9a0-7b6d-b89c0f936daf/smallart.png"},{"name": "Horse Brings The Luck Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/5b338357-4ee4-b112-a050-bcbf542ad9ba/smallart.png"},{"name": "Soulburst Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/a94aac35-403e-d66d-9cf3-aab38f77d9a4/smallart.png"},{"name": "V25: Prelude To Paris Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/d2d3caf9-499f-2ac8-9722-54961c3bcbf5/smallart.png"},{"name": "Code Red Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/c89194bd-4710-b54e-8d6c-60be6274fbb2/smallart.png"},{"name": "5 Years: Redemption Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/26d403fe-4795-8c63-b6c6-119cd9f0c4da/smallart.png"},{"name": "Playzilla Tactibunny Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/a78feb94-4e1f-e845-c253-c182d92db9ef/smallart.png"},{"name": "Triple Threat Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/4f98df89-4d11-e0d8-f7d3-6fa3096b38db/smallart.png"},{"name": "Heartbreaker Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/3eebac1c-4307-7e8f-0e90-a292749237c5/smallart.png"},{"name": "Odin Magazine Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/2295a71b-4a6e-2b5b-6c22-539e376f6fa2/smallart.png"},{"name": "The Cost Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/201be320-4a18-cd81-75fa-228dba06d676/smallart.png"},{"name": "5 Years: Why We Fight Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/ea5af728-4df1-b1a4-e73e-21b6235be71f/smallart.png"},{"name": "Corrode Schema Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/a9222582-4686-0ab2-2ed4-54942463ec30/smallart.png"},{"name": "Quack n' Loaded Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/cd3bab1a-412a-807b-bb5c-a48be2fea2a1/smallart.png"},{"name": "Dragon Gate Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/0730dc82-4e93-d339-538e-498891efdb05/smallart.png"},{"name": "5 Years: Seize The Play Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/edfb9497-48ca-c3d9-cb0a-109cdedf533c/smallart.png"},{"name": "Baited Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/dc22fa1e-4170-c594-aaa8-73928a9ca81e/smallart.png"},{"name": "Sidekicks Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/3e5cd6d5-4a89-23e9-fcaa-2189943a363c/smallart.png"},{"name": "Veto ID Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/effbfb4e-471a-2f6b-8ec1-2c8a29b579f9/smallart.png"},{"name": "Epilogue: Fearmonger Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/4b422609-484a-ea0f-5a97-7d9695f68a4a/smallart.png"},{"name": "V Protocol Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/0819fbcd-4bd4-c379-5384-52803440f2b2/smallart.png"},{"name": "Epilogue: Bomb Buddy Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/ad81a15f-4725-b75f-0c8c-519aa97ed3b6/smallart.png"},{"name": "Boomerproof Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/c06e6a9b-4ba2-bbfd-b150-0c8a2a9dbc1e/smallart.png"},{"name": "Puzzles & Bears Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/f6f2be5f-432e-7cfb-8d5e-f8b344c51fb5/smallart.png"},{"name": "Miks ID Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/917615cd-4164-f3e7-c4ec-4f9f6b6b1926/smallart.png"},{"name": "Run It Back Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/d6e79ba5-4a68-036c-d121-5bb893eafa47/smallart.png"},{"name": "Hitlist Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/9c38c6c2-4228-a08c-4d3c-c0a639bd7ca4/smallart.png"},{"name": "Out for Blood Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/4d0d96d0-4c8a-dd01-2f69-4eaf5c9dc5d7/smallart.png"},{"name": "Venomous Succession Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/c27560d1-42e8-aeca-1420-f1a130d11ccb/smallart.png"},{"name": "Tactidance Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/42d080df-41c6-4c11-ab17-948cb440bf6c/smallart.png"},{"name": "Epilogue: Pop Pawstars Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/e445f841-4a08-9c25-b88b-659327c8d037/smallart.png"},{"name": "Tacti-Ops Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/224e6a53-4463-5694-95b0-2a9dcd2fcd42/smallart.png"},{"name": "Unstoppable // Omen Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/eba5be7e-4ec7-753b-8678-fa88da1e46ab/smallart.png"},{"name": "New Recruit Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/612cd02d-4294-ee2a-644c-a3ba3ddf8805/smallart.png"},{"name": "Bomb Buddy Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/575e14fc-4c7d-2d4b-23b9-5885f5292591/smallart.png"},{"name": "Paceline Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/61ec0ea0-431e-e015-9ec7-24809989302a/smallart.png"},{"name": "Flick of the Wrist Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/dac0eb01-4286-7a91-b29d-dfb0ab5751bf/smallart.png"},{"name": "Amplify Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/8e4c97ca-4364-a7fc-9d2d-92b787499d05/smallart.png"},{"name": "Bandit Schema Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/c06b12b4-4517-5608-3eb9-b1b2d4f57d84/smallart.png"},{"name": "Perfect View Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/e98546c6-49a2-d74f-6a5a-8286d34a1b03/smallart.png"},{"name": "Paintbrush Tactics Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/213c4c4a-44e6-12a5-6ab2-ae8282e93e57/smallart.png"},{"name": "Heartseeker Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/b3339535-486e-df47-8fed-788c1b2854ad/smallart.png"},{"name": "Heartstopper Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/1bb056ab-4064-e550-9a04-58b963eaa518/smallart.png"},{"name": "Dance It All Away Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/d32e58b1-4191-7315-ad4a-9da58b3f23dd/smallart.png"},{"name": "Fur of the Fallen Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/3234d610-4c98-0b5c-a106-e090453af8d8/smallart.png"},{"name": "Pop Pawstars Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/210a6c25-4c3a-7a60-27ed-0b9c26d0780f/smallart.png"},{"name": "Into The Pit Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/0e435790-4300-e6a1-85df-09ade8c188ab/smallart.png"},{"name": "Epilogue: Checkmate Protocol Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/62ec8878-45d9-aefe-ac50-ba8e3d8c2a0f/smallart.png"},{"name": "5 Years: Saltswept Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/065e67f4-4b16-2d5b-49e8-72b53d73e9d4/smallart.png"},{"name": "Cat and Mouse Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/c5d4cd0b-49fa-0b9c-55c7-9b828f83413f/smallart.png"},{"name": "For Retribution Card","tier": "","price": 0,"img": "https://media.valorant-api.com/playercards/33f3c143-4da0-b595-5f70-faa2ab7eba3e/smallart.png"}],"sprays": [{"name": "Roger Duck Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/13f23a75-4af3-3d30-fae5-e1a08498056c/displayicon.png"},{"name": "Beware of Dog Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/e27b7950-4a86-404f-7ec5-b7918c386659/displayicon.png"},{"name": "TactiForce: Go! Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/c4b5f5e7-453f-039f-1782-cbbb12db7ae7/displayicon.png"},{"name": "Heartseeker Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/253b5e22-46af-6676-0390-df9a0562826c/displayicon.png"},{"name": "Acorn Ops Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7be05688-4141-f625-3990-c3933cdbaebd/displayicon.png"},{"name": "Detonation Dab Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/77c1b2ea-4295-9178-3102-2c95a432a650/displayicon.png"},{"name": "Angry Ade Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/ab978a9b-4467-f164-9375-3fb080ff3beb/displayicon.png"},{"name": "Red Fortunes Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/8da459cc-40ce-50d5-d2dd-dfa66503c293/displayicon.png"},{"name": "Arctic Snare Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/a3fa83de-4f93-a662-b43a-cdab057f95e0/displayicon.png"},{"name": "Brimstone Geometry Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/3ef41afd-4e90-835a-103e-59a4333de7d3/displayicon.png"},{"name": "BooBat Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/97d13df6-4a27-7eb4-b637-57a4a2bef955/displayicon.png"},{"name": "Scribble Lightspeed Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7108a8ea-4a41-2e59-b8ad-6a85c8bf1059/displayicon.png"},{"name": "Heartstopper Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/b411cd90-43aa-dc78-dc0b-49a1f548e28c/displayicon.png"},{"name": "Heartbreaker Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/35a4f73d-4308-a3b4-a05a-e2a53b2d2721/displayicon.png"},{"name": "Vamos Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/adb608c3-4139-6b0c-c9f3-4090d79e06b2/displayicon.png"},{"name": "Tech-nically Speaking Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/ec7df7d1-4931-da87-e2b5-a4947cf901b0/displayicon.png"},{"name": "Paceline Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/a601870c-4f4b-4db9-45ac-198d3573f2b4/displayicon.png"},{"name": "Cans On Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/fe86a4c5-4e92-324b-4c0d-a7a837d0d548/displayicon.png"},{"name": "Cosmic Eyes Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7d7b77af-4f3f-f3b0-afbc-8db3974ad592/displayicon.png"},{"name": "Woke Up Thinking Lineups Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/f165025c-4113-9b61-4465-ed956e4533e2/displayicon.png"},{"name": "Barrier Boost Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/4ecfa47b-409f-c74c-3c3b-9ea6de3552b6/displayicon.png"},{"name": "On Your Feet Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/cad8fddd-4297-cde3-8130-77b1a2731a27/displayicon.png"},{"name": "Storm Surge Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/8ade5e91-4a18-db7a-9bda-c2a7c37f3ada/displayicon.png"},{"name": "Boss Bear Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/44e7493c-4199-2987-6464-5e890120c8fa/displayicon.png"},{"name": "No Zipline Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/8b9ca36a-4a26-d760-5eca-91a4bed2a065/displayicon.png"},{"name": "Rage Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/5b5fc918-4d57-9fa9-1a5d-1b84c43a121e/displayicon.png"},{"name": "Polish and Punish Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/470f6ca9-4011-8ad3-df95-57b3cdeb613a/displayicon.png"},{"name": "Bump It Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7fd664a6-4082-1877-3516-489aa0b0bdae/displayicon.png"},{"name": "Hot Seat Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7e85d0ab-4cc5-d869-5485-798aae7e8656/displayicon.png"},{"name": "Riptide Ripped Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/914c54df-41dd-8b47-d586-f1942740506d/displayicon.png"},{"name": "GLHF Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/6983ae7c-4cb5-835c-8f62-b7affbaae20e/displayicon.png"},{"name": "Soulburst Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/807350d7-47ec-e85f-bb69-f8b98d4c376d/displayicon.png"},{"name": "Tacti Tears Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/3e808bd1-48b3-0fa3-6ae1-60a6c6cf5008/displayicon.png"},{"name": "Rush Zone Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/8acf5901-49e2-beaa-cbaa-a3a335faad73/displayicon.png"},{"name": "Five and Flawless Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/a44495aa-4062-8dc9-dc4f-ada69c28a597/displayicon.png"},{"name": "Agent of Chaos Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/f3e98f0b-4d3b-aaed-498e-da942e81bcc0/displayicon.png"},{"name": "Agent On Route Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/66b8c52b-4701-c231-835b-5fb781df3fa0/displayicon.png"},{"name": "Wingman Solo Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/80afed10-4eeb-6298-32c3-49ac1f2fc9a7/displayicon.png"},{"name": "V for VALORANT Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/5d88fd45-434d-b0d6-2331-e8b3d47b8395/displayicon.png"},{"name": "Dragon Gate Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/0712b6de-47e1-d4b8-3ece-f99d3966e515/displayicon.png"},{"name": "Abilities Don't Kill Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/7e2ba2e8-4597-060a-b41e-81acedca414e/displayicon.png"},{"name": "Radiant Riffs Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/ecaa869c-4982-51bf-c0b4-54a287120ec5/displayicon.png"},{"name": "Headbang Havoc Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/de3ffd7b-4908-47aa-89f1-b39d90272313/displayicon.png"},{"name": "Percussion Protocol Spray","tier": "","price": 0,"img": "https://media.valorant-api.com/sprays/d0344ba6-4765-1bd3-920e-88b411571393/displayicon.png"}],"flexes": [{"name": "PB&J Flex","tier": "","price": 0,"img": "https://media.valorant-api.com/flex/aa283b9a-44dd-7c05-7017-28889664a848/displayicon.png"},{"name": "Dragon Gate Flex","tier": "","price": 0,"img": "https://media.valorant-api.com/flex/833953fa-439e-b808-de05-7c895f7cd117/displayicon.png"}],"titles": ["Aura Farming","Recruit","Red Flag","Unserious","Big Guy","Flaming Steed","GOOOOALLLL!!!","Performative","Squad","Cachando todo","Gnarly","Green Flag","Six Seven","Bonjour","Bossman","Overheating","Harmony","Tea","Sweaty","In Sync","All Gas","From the Grave","Last Player Standing","IGL","Horsepower","Superstar","Unc"],"missions": [{"name": "Purchase Items from the Armory","percent": 0.5},{"name": "Play Rounds Or Stages","percent": 0},{"name": "Play A Match","percent": 0}],"store": [],"accessory": [],"daily": {"vp": 0,"rp": 0},"battlepasses": [{"name": "Season 2026 // Act II","tier": "","price": 0,"img": "https://app.explorant.space/static/default-battlepass.png"},{"name": "Season 2025 // Act VI","tier": "","price": 0,"img": "https://app.explorant.space/static/default-battlepass.png"}],"bpTotal": 2000,"agents": [{"name": "Skye Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/e7e7c5e1-4e76-22f8-f423-078b33758464.png"},{"name": "Killjoy Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/9443cbd4-da4d-4395-8152-26a5b269f339.png"},{"name": "Harbor Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/5d627650-48ac-5710-5e49-78a41dc28b7b.png"},{"name": "Clove Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/59019709-44fe-f723-da01-848df9ac0413.png"},{"name": "Reyna Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/4c9b0fcf-57cd-4e84-ae5a-ce89e396242f.png"},{"name": "Miks Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/3364d1bb-4172-c0a2-0706-c795620652b2.png"},{"name": "Veto Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/079c77a8-4ee8-4b8c-2983-d8bfe08ec3f0.png"},{"name": "Breach Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/bfb8160e-eee0-46b1-a069-16f93adc7328.png"},{"name": "Astra Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/1d40b4b9-4d86-50b7-9f79-3d939e09c661.png"},{"name": "KAY/O Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/9454d42a-471f-27b9-325c-319a355c34ee.png"},{"name": "Deadlock Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/78f97f6c-4f19-bfcf-e466-a4840c7c9057.png"},{"name": "Tejo Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/d2a737e1-4a5e-07a9-b26d-dab19d92fb2c.png"},{"name": "Chamber Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/ebfd35c7-4d47-11f6-63f3-0398f055d8ab.png"},{"name": "Vyse Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/72316ecc-4e88-5b55-aed4-529a76eb75f3.png"},{"name": "Iso Gear","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/26c6e81f-4d62-e55e-24e7-3d8fa37e3b97.png"},{"name": "Fade Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/7ae5ad85-400b-beba-989d-42924ccf39be.png"},{"name": "Cypher Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/2195e89f-20ad-4e37-b46c-cf46a6715dfd.png"},{"name": "Omen Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/eb35d061-4eed-4d22-81a3-1491ec892429.png"},{"name": "Gekko Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/cae6ab4a-4b4a-69a0-3c7a-48b17e313f52.png"},{"name": "Raze Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/60f9f1f0-2bb7-47f9-85b7-b873a5a1123b.png"},{"name": "Viper Contract","tier": "","price": 0,"img": "https://preview.explorant.space/static/agents/f94fc320-a71f-47e3-b062-6798d14f17d6.png"}],"agentTotal": 2000,"nextFirstWin": "Available","nextWeekly": "Tue 11-Aug-2026 8:15 AM","expired": false,"slug": "z0IukRwx"};
+    if(!__sel) return;
+    ACCOUNT.nickname  = __sel.name||__sel.username;
+    ACCOUNT.title     = __sel.title||"";
+    ACCOUNT.region    = __sel.region||"";
+    ACCOUNT.country   = __sel.country||"";
+    ACCOUNT.level     = +(__sel.level||0);
+    ACCOUNT.levelNow  = +(__sel.levelNow||0);
+    ACCOUNT.levelMax  = +(__sel.levelMax||5000);
+    ACCOUNT.totalValue= +(__sel.totalValue||0);
+    if(__sel.banner) ACCOUNT.banner = __sel.banner;
+    RANKS.length=0;  (__sel.ranks ||[]).forEach(function(r){ RANKS.push({name:r.name, icon:r.icon}); });
+    TITLES.length=0; (__sel.titles||[]).forEach(function(t){ TITLES.push(t); });
+    MISSIONS.length=0;(__sel.missions||[]).forEach(function(m){ MISSIONS.push({name:m.name, percent:(m.pct||m.percent||0)}); });
+    function __fill(arr,list,cls,color,kind){ arr.length=0; (list||[]).forEach(function(it){ arr.push({name:it.name, img:it.img, price:it.price||0, tier:it.tier||"", type:cls, color:color, kind:kind}); }); }
+    __fill(GUNS,    __sel.skins,  "skin","#c5c5ff","rifle");
+    __fill(BUDDIES, __sel.buddies,"skin","#c5c5ff","rifle");
+    __fill(CARDS,   __sel.cards,  "wide","#c5c5ff","rifle");
+    __fill(SPRAYS,  __sel.sprays, "skin","#c5c5ff","rifle");
+    STORE.length=0; ACCESSORY.length=0; AGENTS.length=0; FLEXES.length=0;
+    __fill(FLEXES,  __sel.flexes, "skin","#c5c5ff","rifle");
+    if(__sel.agents && __sel.agents.length){ __fill(AGENTS, __sel.agents, "agent","#c5c5ff","rifle"); }
+    if(__sel.battlepasses && __sel.battlepasses.length){ __fill(BATTLEPASSES, __sel.battlepasses, "skin","#c5c5ff","rifle"); }
+    if(__sel.store && __sel.store.length){ __fill(STORE, __sel.store, "skin","#c5c5ff","rifle"); }
+    if(__sel.accessory && __sel.accessory.length){ __fill(ACCESSORY, __sel.accessory, "skin","#c5c5ff","rifle"); }
+    if(typeof __sel.bpTotal==="number"){ BP_TOTAL=__sel.bpTotal; }
+    var __VP="https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png";
+    var __VPI='<img src="'+__VP+'" alt="vp" onerror="this.style.display=\'none\'"/>';
+    if(__sel.daily){ var __dc=document.getElementById("dailyCur"); if(__dc) __dc.innerHTML=__VPI+'<span class="cur">'+(__sel.daily.vp||0)+'</span>&nbsp;&nbsp;<img src="https://media.valorant-api.com/currencies/e59aa87c-4cbf-517a-5983-6e81511be9b7/displayicon.png" alt="rp" onerror="this.style.display=\'none\'"/><span class="cur">'+(__sel.daily.rp||0)+'</span>'; }
+    if(typeof __sel.agentTotal==="number"){ var __ag=document.getElementById("agentValue"); if(__ag) __ag.innerHTML='<span class="cur">Total Value: '+__sel.agentTotal+'</span>'+__VPI; }
+  }catch(e){}
+})();
+
+/* ================= RENDERER (leave as-is) ================= */
+const GUN_SHAPES = {
+  rifle:`<path d="M2 34 h60 l6-6 h58 l10 8 h8 v8 h-14 l-4 6 h-70 l-8 8 h-16 v-12 h-16 v-8 z"/><rect x="76" y="20" width="6" height="20"/><rect x="96" y="18" width="4" height="16" fill-opacity=".5"/>`,
+  sniper:`<path d="M2 30 h90 l8-6 h40 l8 6 h6 v6 h-18 l0 10 h-90 l-6 8 h-14 v-10 h-24 v-8 z"/><rect x="70" y="22" width="5" height="16"/><rect x="150" y="16" width="5" height="14" fill-opacity=".4"/>`,
+  pistol:`<path d="M4 22 h34 l6-10 h30 v10 h8 v16 h-12 l-6 26 h-18 l-4-22 h-18 v-10 h-20 z"/><rect x="42" y="10" width="4" height="12" fill-opacity=".5"/>`,
+  smg:`<path d="M2 30 h52 l6-8 h34 v8 h10 v8 h-12 l-4 6 h-40 l-6 8 h-14 v-10 h-26 v-8 z"/><rect x="60" y="20" width="5" height="16"/><rect x="40" y="42" width="14" height="22" fill-opacity=".4"/>`,
+  shotgun:`<path d="M2 28 h84 l10-8 h30 v8 h8 v8 h-14 l-4 8 h-70 l-6 8 h-14 v-12 h-24 v-8 z"/><rect x="70" y="18" width="6" height="20"/>`,
+  lmg:`<path d="M2 30 h70 l8-8 h40 v8 h16 v8 h-14 l-4 6 h-70 l-8 8 h-40 z"/><rect x="46" y="12" width="6" height="20"/><rect x="70" y="16" width="5" height="20"/>`,
+  knife:`<path d="M60 10 l34 40 6 10-4 8-14-4-4-8-30-40 z"/><rect x="88" y="60" width="12" height="30"/>`,
+};
+function gunSVG(color,kind){ kind=kind||"rifle";
+  return `<svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg"><g fill="${color}">${GUN_SHAPES[kind]||GUN_SHAPES.rifle}</g></svg>`;
+}
+function fb(imgEl,kind,color){ const t=imgEl.closest(".thumb"); if(t) t.innerHTML=gunSVG(color||"#c5c5ff",kind); }
+function esc(s){ return String(s).replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c])); }
+
+/* currency icon + amount shown in section headers (like the original Daily Store header) */
+const CUR = {
+  vp:"https://media.valorant-api.com/currencies/85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741/displayicon.png",
+  rp:"https://media.valorant-api.com/currencies/e59aa87c-4cbf-517a-5983-6e81511be9b7/displayicon.png"
+};
+function coinIcon(){
+  return `<img src="${CUR.vp}" alt="vp" onerror="this.style.display='none'"/>`;
+}
+function currencyIcon(type,amount){
+  return `<img src="${CUR[type]||CUR.vp}" alt="${type}" onerror="this.style.display='none'"/><span class="cur">${amount}</span>`;
+}
+
+/* Content tier icon URLs from the original (media.valorant-api.com/contenttiers/...) */
+const TIER_ICONS = {
+  "Select":    "12683d76-48d7-84a3-4e09-6985794f0445",
+  "Deluxe":    "0cebb8be-46d7-c12a-d306-e9907bfc5a25",
+  "Premium":   "60bca009-4182-7998-dee7-b8a2558dc369",
+  "Exclusive": "e046854e-406c-37f4-6607-19a9ba8426fc",
+  "Rarer":     "411e4a55-4e59-7757-41f0-86a53f101bb2",
+  "Ultra":     "b46f7777-49a4-8a5f-5912-9b3e2b4f5c2e"
+};
+const CT = "https://media.valorant-api.com/contenttiers/";
+
+/* type flags for sizing: "skin"(default) | "agent"(tall) | "other"(wide/cover) */
+function itemClass(item){
+  const s = item.shape || item.type || "skin";
+  if(s==="agent") return "tall";
+  if(s==="other"||s==="wide") return "wide";
+  return "";
+}
+
+function itemCard(item){
+  const color = item.color || "#c5c5ff";
+  const kind = item.kind || "rifle";
+  const img = item.img
+    ? `<img class="${itemClass(item)}" src="${item.img}" alt="${esc(item.name)}" loading="lazy" onerror="fb(this,'${kind}','${color}')">`
+    : `<img class="${itemClass(item)}" src="" alt="" onerror="fb(this,'${kind}','${color}')">`;
+  const price = (item.price!=null && item.price>0) ? `<span class="badge-price">${item.price}</span>` : "";
+  const tierName = item.tier || item.ct || "";
+  const tierIcon = TIER_ICONS[tierName];
+  const tierBadge = tierIcon
+    ? `<span class="badge-tier"><img src="${CT}${tierIcon}/displayicon.png" alt="${esc(tierName)}" onerror="this.parentNode.style.display='none'"/></span>`
+    : "";
+  const subline = (item.sub ? `<div class="card-sub-sub">${esc(item.sub)}</div>` : "");
+  return `<div class="item">
+      <div class="pos">
+        ${price}
+        ${tierBadge}
+        <div class="thumb">${img}</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-subtitle">${esc(item.name)}</div>
+        ${subline}
+      </div>
+    </div>`;
+}
+function renderGrid(id,arr){
+  const el=document.getElementById(id); if(!el) return;
+  if(!arr||!arr.length){ el.innerHTML=`<div class="empty" style="grid-column:1/-1;">${el.getAttribute("data-empty")||"No Items to Show"}</div>`; return; }
+  el.innerHTML=arr.map(it=>itemCard(it)).join("");
+}
+function sum(arr){ return (arr||[]).reduce((a,it)=>a+(it.price||0),0); }
+
+/* tabs */
+const tabsNav=document.getElementById("tabs");
+tabsNav.innerHTML=TABS.map((t,i)=>`<div class="tab${i===0?" active":""}" data-pane="${t.id}">${t.label}</div>`).join("");
+/* account name */
+const nm=document.querySelector(".account-name");
+if(nm){ nm.outerHTML=`<h1 class="account-name">${esc(ACCOUNT.nickname)||"My Arsenal"}</h1>`; }
+
+/* banner */
+document.getElementById("banner").innerHTML = ACCOUNT.banner
+  ? `<img src="${ACCOUNT.banner}" style="width:100%;height:100%;object-fit:cover;display:block;"
+       onerror="this.outerHTML=bannerFallback()">`
+  : bannerFallback();
+function bannerFallback(){
+  return `<svg width="100%" height="100%" viewBox="0 0 600 350" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <rect width="600" height="350" fill="#302e2d"/>
+    <text x="300" y="200" text-anchor="middle" font-size="60" font-weight="800" fill="#dd3f4c" font-family="Arial" letter-spacing="4">◆ ${esc(ACCOUNT.nickname)}</text>
+  </svg>`;
+}
+/* account info columns */
+document.getElementById("infoCol").innerHTML = `
+  <p class="themed-lbl">Nickname</p><p class="val">${esc(ACCOUNT.nickname)}</p>
+  <p class="themed-lbl">Title</p><p class="val">${esc(ACCOUNT.title)}</p>
+  <p class="themed-lbl">Region</p><p class="val">${esc(ACCOUNT.region)}</p>
+  <p class="themed-lbl">Country</p><p class="val">${esc(ACCOUNT.country)}</p>`;
+document.getElementById("levelCol").innerHTML = `
+  <p class="themed-lbl">Level</p>
+  <div class="lvl">${ACCOUNT.level}</div>
+  <div class="lvl-xp">${ACCOUNT.levelNow} / ${ACCOUNT.levelMax}</div>
+  <p class="themed-lbl" style="margin-top:6px;">Total Value</p><p class="val">${ACCOUNT.totalValue}</p>`;
+document.getElementById("penalties").innerHTML=`<div class="text-muted" style="text-align:center;line-height:1.8;font-size:.9rem;margin-top:24px;">No Penalties Recently</div>`;
+
+
+/* ranks — each row: badge icon + season name */
+const ranksEl=document.getElementById("ranks");
+if(!RANKS.length){ ranksEl.innerHTML=`<div class="text-muted" style="line-height:1.8;font-size:.85rem;margin-top:8px;">Ranks Not Fetched Yet. Please Ask Owner to Refresh Account</div>`; }
+else{
+  ranksEl.innerHTML=RANKS.map(r=>`
+    <div class="rank-inline">
+      <img src="${r.icon}" alt="${esc(r.name)}" onerror="this.style.visibility='hidden'"/>
+      <div>${esc(r.name)}</div>
+    </div>`).join("");
+}
+
+/* collections */
+renderGrid("weaponGrid",GUNS);
+document.getElementById("weaponValue").innerHTML=`<span class="cur">Total Value: ${sum(GUNS)}</span>${coinIcon()}`;
+renderGrid("dailyStore",STORE);
+renderGrid("accessoryStore",ACCESSORY);
+renderGrid("buddyGrid",BUDDIES);
+renderGrid("cardGrid",CARDS);
+renderGrid("sprayGrid",SPRAYS);
+renderGrid("agentGrid",AGENTS);
+/* battlepass / flexes */
+if(BATTLEPASSES.length){ document.getElementById("bpBody").innerHTML=`<div class="grid">${BATTLEPASSES.map(it=>itemCard(it)).join("")}</div>`; }
+document.getElementById("bpValue").innerHTML=`<span class="cur">Total Value: ${BP_TOTAL}</span>${coinIcon()}`;
+if(FLEXES.length){ document.getElementById("flexes").innerHTML=`<div class="grid">${FLEXES.map(it=>itemCard(it)).join("")}</div>`; }
+
+/* titles */
+/* Titles -> cards in a 6-col grid; red centered name + "<name> Title" grey footer */
+document.getElementById("titleList").innerHTML=TITLES.map(t=>`
+  <div class="item">
+    <div class="pos"><div class="title-block">${esc(t)}</div></div>
+    <div class="card-footer"><div class="card-subtitle">${esc(t)} <span class="title-suffix">Title</span></div></div>
+  </div>`).join("");
+
+/* progressions */
+document.getElementById("nextFirstWin").textContent=NEXT_FIRST_WIN;
+document.getElementById("nextWeekly").textContent=NEXT_WEEKLY;
+
+/* Weekly missions -> inner cards with circular progress ring */
+function ring(pct,color){
+  const r=48, c=2*Math.PI*r;
+  const off=c*(1-pct/100);
+  return `<svg class="CircularProgressbar" viewBox="0 0 100 100">
+    <path class="trail" d="M 50,50 m 0,-48 a 48,48 0 1 1 0,96 a 48,48 0 1 1 0,-96" stroke-width="4" fill-opacity="0" style="stroke-dasharray:${c}px;stroke-dashoffset:0px;stroke:var(--separator-color)"/>
+    <path class="path" d="M 50,50 m 0,-48 a 48,48 0 1 1 0,96 a 48,48 0 1 1 0,-96" stroke-width="4" stroke-linecap="round" fill-opacity="0" style="stroke-dasharray:${c}px;stroke-dashoffset:${off}px;stroke:${color}"/>
+    <text x="50" y="50" text-anchor="middle" dominant-baseline="middle" style="font-size:20px;fill:#8f8f8f;font-family:Nunito,sans-serif;font-weight:400">${pct}%</text>
+  </svg>`;
+}
+document.getElementById("missionList").innerHTML=MISSIONS.map((m,i)=>`
+  <div class="mission-inner">
+    <div class="card-title">${esc(m.name)}</div>
+    <div class="progress-bar-circle">${ring(m.percent,"#dd3f4c")}</div>
+  </div>`).join("");
+
+/* hint box */
+document.getElementById("howto").innerHTML=`
+  <b>This whole page is driven by the EDIT block at the top of the &lt;script&gt;.</b><br/>
+  To add a gun: copy a line in the <code>GUNS</code> list, paste a skin
+  <b>UUID</b> into <code>newGun("uuid", "Name", "Tier", price)</code>, save, refresh.
+  To remove a gun: comment out its line with <code>//</code>. Account name, level, ranks,
+  titles, missions, agents and every tab's items are all editable there too.`;
+
+/* tab switching */
+document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{
+  const target=tab.dataset.pane;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t===tab));
+  document.querySelectorAll(".pane").forEach(p=>p.classList.toggle("active",p.dataset.pane===target));
+  window.scrollTo({top:tabsNav.offsetTop,behavior:"smooth"});
+}));
+</script>
+</body>
+</html>

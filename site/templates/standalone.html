@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Explorant — standalone demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --theme-color-1:#dd3f4c; --theme-color-2:#aa5e6c; --theme-color-3:#a5456d;
+  --theme-color-4:#843a47; --theme-color-5:#9e777e; --theme-color-6:#c07a6c;
+  --theme-color-1-10:rgba(221,63,76,.1);
+  --primary-color:#8f8f8f; --foreground-color:#222020; --separator-color:#424242;
+  --bg:#1b1919;
+}
+*{box-sizing:border-box;}
+html{background:#1b1919;}
+body{margin:0;background:var(--bg);color:var(--primary-color);
+  font-family:"Nunito","Segoe UI",Roboto,-apple-system,Helvetica,Arial,sans-serif;
+  font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input{font-family:inherit;}
+img{max-width:100%;display:block;}
+::selection{background:#e56a74;color:#fff;}
+::-webkit-scrollbar{width:7px;height:4px;}
+::-webkit-scrollbar-thumb{background-color:#24b299;}
+::-webkit-scrollbar-track{background:transparent;}
+
+/* ---- login ---- */
+.login-page{min-height:100vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:radial-gradient(1200px 700px at 50% 20%, rgba(13,60,64,.55), transparent 60%),
+             linear-gradient(160deg,#0c2b30 0%, #0a2430 45%, #0d1f2a 100%);}
+.login-page::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(221,63,76,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(221,63,76,.05) 1px,transparent 1px);
+  background-size:60px 60px;mask-image:radial-gradient(700px 500px at 50% 40%, #000 20%, transparent 75%);}
+.deco{position:absolute;font-size:18px;color:var(--theme-color-1);opacity:.8;user-select:none;}
+.deco.line{width:46px;height:2px;background:var(--theme-color-1);border-radius:2px;}
+.deco.sq{width:10px;height:10px;border-radius:2px;}
+.side-text{position:absolute;right:34px;bottom:60px;writing-mode:vertical-rl;text-transform:uppercase;letter-spacing:4px;
+  font-size:15px;font-weight:800;color:var(--theme-color-1);line-height:1;}
+.side-text b{color:var(--primary-color);}
+.login-card{position:relative;z-index:2;width:100%;max-width:680px;background:var(--foreground-color);
+  border:1px solid var(--separator-color);border-radius:4px;padding:46px 60px 42px;box-shadow:0 30px 80px rgba(0,0,0,.5);}
+.login-card .logo{display:flex;justify-content:center;margin-bottom:26px;}
+.login-card .logo img{height:44px;}
+.login-card .row{display:flex;align-items:center;justify-content:space-between;margin:0 0 22px;}
+.login-card .row .t{font-size:20px;font-weight:700;color:var(--primary-color);}
+.login-card .row .s{font-size:14px;color:var(--primary-color);}
+.login-card .row .s a{color:var(--theme-color-1);font-weight:600;}
+.fld{margin-bottom:22px;position:relative;}
+.fld input{position:relative;z-index:2;width:100%;background:transparent;border:0;outline:none;color:var(--primary-color);
+  font-size:13px;padding:11px 12px 9px;border-bottom:1px solid var(--separator-color);}
+.fld input:focus{border-bottom-color:var(--theme-color-1);}
+.fld .lbl{position:absolute;z-index:1;left:0;top:-9px;font-size:10px;color:var(--primary-color);background:var(--foreground-color);padding:0 4px;}
+.fld .bar{position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--separator-color);}
+.fld .bar::after{content:"";display:block;height:1px;background:var(--theme-color-1);transform:scaleX(0);transform-origin:left;transition:.25s;}
+.fld input:focus~.bar::after{transform:scaleX(1);}
+.login-card .foot{display:flex;align-items:center;justify-content:space-between;margin-top:8px;}
+.login-card .forget{font-size:12px;color:var(--primary-color);}
+.login-card .forget:hover{color:var(--theme-color-1);}
+.btn-login{background:var(--theme-color-1);color:#fff;border:0;border-radius:4px;padding:10px 46px;font-size:13px;
+  font-weight:800;letter-spacing:1px;text-transform:uppercase;}
+.btn-login:hover{background:#c93a46;}
+.err{display:block;background:var(--theme-color-1-10);border:1px solid var(--theme-color-1);color:var(--theme-color-1);
+  border-radius:4px;padding:9px 12px;font-size:12px;margin:0 0 18px;text-align:center;}
+.err.ok{border-color:#24b299;color:#8fe3cf;}
+
+/* ---- app shell ---- */
+.app{display:flex;min-height:100vh;display:none;}
+.sidebar{width:78px;flex:0 0 78px;background:var(--foreground-color);border-right:1px solid var(--separator-color);
+  display:flex;flex-direction:column;align-items:center;padding:16px 0;position:sticky;top:0;height:100vh;gap:6px;}
+.sidebar .menu-btn{width:34px;height:34px;border:1px solid var(--separator-color);border-radius:4px;background:transparent;
+  color:var(--primary-color);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;margin-bottom:16px;}
+.sidebar .menu-btn span{width:14px;height:2px;background:currentColor;border-radius:1px;}
+.side-nav{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;}
+.side-item{width:100%;display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 0;color:var(--primary-color);
+  font-size:9.5px;position:relative;transition:color .15s;}
+.side-item svg{width:20px;height:20px;}
+.side-item:hover{color:var(--theme-color-1);}
+.side-item.active{color:var(--theme-color-1);}
+.side-item.active::before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;background:var(--theme-color-1);border-radius:2px;}
+.main{flex:1;min-width:0;display:flex;flex-direction:column;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--foreground-color);
+  border-bottom:1px solid var(--separator-color);}
+.topbar .left .contact{border:1px solid var(--theme-color-1);color:var(--theme-color-1);background:transparent;
+  padding:7px 16px;border-radius:3px;font-size:12px;font-weight:700;}
+.topbar .center .logo img{height:32px;margin:0 auto;}
+.topbar .right{display:flex;align-items:center;gap:16px;font-size:12px;}
+.degraded{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--separator-color);border-radius:4px;
+  padding:6px 10px;font-size:11px;}
+.degraded svg{width:13px;height:13px;color:#e0a800;}
+.user-chip{display:flex;align-items:center;gap:8px;border-left:2px solid var(--theme-color-1);padding-left:10px;font-size:12px;}
+.bell{position:relative;}
+.bell svg{width:18px;height:18px;}
+.bell .dot{position:absolute;top:-2px;right:-2px;width:7px;height:7px;border-radius:50%;background:var(--theme-color-1);}
+.banner{display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;padding:9px 40px 9px 18px;
+  position:relative;font-size:12.5px;color:#eaf7f2;}
+.banner .close{position:absolute;right:16px;top:50%;transform:translateY(-50%);background:none;border:0;color:#dfe9e6;font-size:14px;}
+.banner+.banner{border-top:1px solid var(--separator-color);}
+.banner.warn{background:linear-gradient(90deg,#1f4d3d,#1c4a3a);color:#d9efe6;}
+.banner.gold{background:linear-gradient(90deg,#4a3a1c,#443517);color:#efe2c4;}
+.content{padding:22px 26px 40px;}
+.crumb{font-size:15px;font-weight:700;margin-bottom:20px;}
+.crumb b{font-weight:400;}
+.crumb b::before{content:" / ";}
+.stat-grid{display:grid;grid-template-columns:repeat(2,minmax(0,340px));gap:18px;}
+.stat-card{background:var(--foreground-color);border:1px solid var(--separator-color);border-radius:4px;min-height:150px;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:8px;padding:30px 0 24px;}
+.stat-card .ic{width:56px;height:56px;color:var(--theme-color-1);}
+.stat-card .ic svg{width:56px;height:56px;stroke-width:1.4;}
+.stat-card .lbl{font-size:14px;color:var(--primary-color);}
+.stat-card .val{font-size:26px;font-weight:700;color:var(--primary-color);margin-top:-4px;}
+.acc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:14px;}
+.acc-top .h{font-size:20px;font-weight:700;}
+.acc-top .h b{font-weight:400;font-size:14px;}
+.acc-top .h b::before{content:" / ";}
+.slots-pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--separator-color);border-radius:20px;
+  padding:5px 12px;font-size:12px;}
+.slots-pill i{width:8px;height:8px;border-radius:50%;background:var(--theme-color-1);display:inline-block;}
+.acc-top .r{display:flex;align-items:center;gap:10px;}
+.add-acc{background:var(--theme-color-1);color:#fff;border:0;border-radius:4px;padding:8px 18px;font-size:13px;font-weight:700;}
+.add-acc:hover{background:#c93a46;}
+.icon-btn{width:36px;height:36px;border:1px solid var(--separator-color);border-radius:4px;background:var(--foreground-color);
+  color:var(--primary-color);display:inline-flex;align-items:center;justify-content:center;}
+.filters{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+.filter-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--separator-color);border-radius:4px;
+  padding:7px 12px;font-size:12px;background:var(--foreground-color);}
+.search{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--separator-color);border-radius:20px;
+  padding:7px 14px;background:var(--foreground-color);}
+.search input{background:none;border:0;outline:none;color:var(--primary-color);font-size:12px;width:150px;}
+.search svg{width:14px;height:14px;}
+.count-row{display:flex;align-items:center;justify-content:space-between;font-size:12px;margin-bottom:12px;}
+.acc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media(max-width:1100px){.acc-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:720px){.acc-grid{grid-template-columns:1fr;}}
+.acc-card{border:2px solid var(--theme-color-1);border-radius:4px;overflow:hidden;background:var(--foreground-color);}
+.acc-card .thumb{aspect-ratio:16/6;background:linear-gradient(120deg,#1a1a19,#141313);position:relative;
+  display:flex;align-items:center;justify-content:center;}
+.acc-card .thumb img{width:100%;height:100%;object-fit:cover;opacity:.95;}
+.acc-card .thumb .banner-tag{position:absolute;top:10px;left:10px;background:var(--theme-color-1);color:#fff;font-size:10px;
+  font-weight:800;letter-spacing:.5px;padding:4px 12px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+.acc-card .thumb .v-mark{font-weight:800;color:var(--theme-color-1);font-size:22px;opacity:.9;}
+.acc-card .rowbar{display:flex;align-items:center;gap:10px;padding:11px 12px;border-top:1px solid var(--separator-color);}
+.acc-card .rowbar .chk{width:15px;height:15px;border:1px solid var(--separator-color);border-radius:2px;flex:0 0 auto;cursor:pointer;}
+.acc-card .rowbar .name{flex:1;font-size:12px;}
+.acc-card .rowbar .menu{letter-spacing:2px;font-weight:700;}
+.acc-card.expired{cursor:pointer;border-color:var(--theme-color-1);}
+.acc-card.expired:hover .name{color:var(--theme-color-1);}
+.acc-card.expired .thumb:after{content:"";position:absolute;inset:0;background:rgba(221,63,76,.06);}
+.empty{color:var(--primary-color);font-size:13px;padding:40px 0;text-align:center;opacity:.7;}
+.empty .big{font-size:40px;margin-bottom:8px;color:var(--theme-color-1);}
+table.lb{width:100%;border-collapse:collapse;margin-top:6px;font-size:13px;}
+table.lb th,table.lb td{padding:11px 14px;text-align:left;border-bottom:1px solid var(--separator-color);}
+table.lb th{color:var(--theme-color-1);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:.5px;}
+table.lb tr:hover td{background:var(--theme-color-1-10);}
+table.lb .rank{font-weight:800;}
+.chip{display:inline-block;border:1px solid var(--separator-color);border-radius:20px;padding:3px 10px;font-size:11px;}
+.page-footer{margin-top:auto;display:flex;align-items:center;justify-content:space-between;padding:16px 26px;
+  border-top:1px solid var(--separator-color);font-size:11px;}
+.page-footer .copy a{color:var(--theme-color-1);font-weight:700;}
+.page-footer .socials{display:flex;align-items:center;gap:12px;}
+.page-footer .socials a{display:inline-flex;align-items:center;gap:4px;}
+.page-footer .socials svg{width:14px;height:14px;}
+@media(max-width:800px){.sidebar{width:60px;flex-basis:60px;}.login-card{padding:36px 26px;margin:0 16px;}.stat-grid{grid-template-columns:1fr;}}
+
+/* riot modal */
+.riot-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.riot-overlay.show{display:flex;}
+.riot-card{width:100%;max-width:420px;background:var(--foreground-color);border:1px solid var(--separator-color);border-radius:6px;
+  padding:30px 28px;box-shadow:0 30px 80px rgba(0,0,0,.6);}
+.riot-card h2{margin:0 0 4px;font-size:18px;font-weight:700;}
+.riot-card p{margin:0 0 20px;font-size:12px;color:var(--primary-color);opacity:.8;}
+.riot-card .foot{display:flex;align-items:center;justify-content:flex-end;gap:12px;}
+.riot-card .cancel{background:none;border:1px solid var(--separator-color);color:var(--primary-color);border-radius:4px;
+  padding:9px 18px;font-size:12px;font-weight:700;}
+.riot-card .cancel:hover{border-color:var(--theme-color-1);color:var(--theme-color-1);}
+
+/* account page (profile) */
+.account-wrap{max-width:1240px;margin:0 auto;padding:24px 26px;}
+.account-name{font-size:2rem;font-weight:800;color:#fff;letter-spacing:1px;margin:0 0 8px;}
+.account-banner{width:100%;border-radius:6px;overflow:hidden;margin-bottom:20px;}
+.account-banner img{width:100%;}
+.themed-lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--primary-color);margin:0 0 4px;}
+.val{font-size:15px;color:#8f8f8f;margin:0 0 12px;font-weight:400;}
+.section-h{font-size:1.4rem;font-weight:800;color:#fff;letter-spacing:1px;margin:30px 0 16px;border-bottom:1px solid var(--separator-color);padding-bottom:10px;}
+.item{background:var(--foreground-color);border:1px solid var(--separator-color);border-radius:6px;overflow:hidden;}
+.item .pos{position:relative;}
+.item .thumb{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:20px;}
+.item .thumb img{max-height:100%;object-fit:contain;}
+.badge-price{position:absolute;top:8px;right:8px;background:var(--theme-color-2);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:3px;}
+.badge-tier{position:absolute;top:8px;left:8px;width:22px;height:22px;}
+.badge-tier img{width:100%;height:100%;}
+.card-footer{padding:10px 12px;border-top:1px solid var(--separator-color);text-align:center;font-size:12px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+.grid-titles{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
+.title-card{background:var(--foreground-color);border:1px solid var(--separator-color);border-radius:6px;padding:16px;text-align:center;}
+.title-text{font-size:14px;font-weight:700;color:var(--primary-color);}
+.empty-h5{color:var(--primary-color);opacity:.7;padding:20px 0;font-size:13px;}
+.rank-line{display:flex;align-items:center;gap:14px;padding:10px 0;border-bottom:1px solid var(--separator-color);}
+.rank-line img{width:50px;height:50px;object-fit:contain;}
+.rank-line .n{font-size:14px;color:var(--primary-color);}
+
+/* admin */
+.admin-wrap{max-width:760px;margin:40px auto;padding:0 20px;}
+.admin-card{background:var(--foreground-color);border:1px solid var(--separator-color);border-radius:8px;padding:28px 26px;margin-bottom:20px;}
+.admin-card h2{margin:0 0 6px;font-size:18px;font-weight:700;color:#fff;}
+.admin-card p{margin:0 0 18px;font-size:12px;color:var(--primary-color);opacity:.8;}
+.admin-form .fld{margin-bottom:16px;max-width:420px;}
+.admin-form .btn-login{margin-top:6px;}
+.textarea{width:100%;background:var(--bg);border:1px solid var(--separator-color);border-radius:4px;color:var(--primary-color);
+  padding:10px 12px;font-size:13px;font-family:inherit;min-height:70px;}
+.admin-list{width:100%;border-collapse:collapse;font-size:13px;}
+.admin-list th,.admin-list td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--separator-color);}
+.admin-list tr:hover td{background:var(--theme-color-1-10);}
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN VIEW ============ -->
+<div class="login-page" id="loginView">
+  <span class="deco line" style="left:9%;top:20%;"></span>
+  <span class="deco sq" style="left:11%;top:27%;"></span>
+  <span class="deco line" style="left:9%;top:70%;"></span>
+  <span class="deco sq" style="left:11%;top:76%;"></span>
+  <span class="deco line" style="right:9%;top:22%;"></span>
+  <span class="deco sq" style="right:11%;top:30%;"></span>
+  <div class="side-text"><b>DEFY</b> THE <b>LIMITS</b></div>
+  <div class="login-card">
+    <div class="logo"><img src="assets/logo.png" alt="Explorant"/></div>
+    <div class="row"><span class="t">Login</span><span class="s">Not Registered? <a href="#" onclick="return false;">Register</a></span></div>
+    <div class="err" id="loginErr" style="display:none;"></div>
+    <form id="loginForm" novalidate>
+      <div class="fld"><span class="lbl">E-mail</span><input type="text" id="loginUser" autocomplete="username"/><span class="bar"></span></div>
+      <div class="fld"><span class="lbl">Password</span><input type="password" id="loginPass" autocomplete="current-password"/><span class="bar"></span></div>
+      <div class="foot">
+        <span class="forget"><a href="#" onclick="return false;">Forget password?</a></span>
+        <button type="submit" class="btn-login">LOGIN</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ============ APP DASHBOARD VIEW ============ -->
+<div class="app" id="appView">
+  <aside class="sidebar">
+    <button class="menu-btn" aria-label="Menu"><span></span><span></span><span></span></button>
+    <nav class="side-nav" id="sideNav"></nav>
+  </aside>
+  <div class="main">
+    <div class="topbar">
+      <div class="left"><a class="contact" href="#" onclick="goAdmin();return false;">Contact Support</a></div>
+      <div class="center"><a class="logo" href="#"><img src="assets/logo.png" alt="Explorant"/></a></div>
+      <div class="right">
+        <span class="degraded"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L23 21H1z"/></svg> Degraded Performance</span>
+        <span class="user-chip" id="userChip"></span>
+        <a class="bell" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="dot"></span></a>
+      </div>
+    </div>
+    <div class="banner warn"><span>[+] Search: Thousands of VALORANT Daily Stores | Instant Skin Alerts | Unlimited Bulk Add Faster Than Ever</span><button class="close">&times;</button></div>
+    <div class="banner gold"><span>&gt; Paid but no Premium? Contact support@explorant.space or DM us on Discord via Contact Support in the top left.</span><button class="close">&times;</button></div>
+    <div class="content" id="content"></div>
+    <div class="page-footer">
+      <div class="copy">2022-2026 &copy; <a href="#" onclick="return false;">EXPLORANT</a> <span style="opacity:.5;margin-left:10px;">&middot; <a href="#" id="logoutLink">Log out</a></span></div>
+      <div>Go to settings to activate Windows.</div>
+      <div class="socials">
+        <a href="https://discord.gg/w43VMTjJhr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.9 3c-.2.4-.5 1-.6 1.4a18 18 0 0 0-5.4 0C9.7 3.9 9.4 3.4 9.2 3a19.8 19.8 0 0 0-4.4 1.4A20.6 20.6 0 0 0 2.1 18.4 19.8 19.8 0 0 0 7.1 20.3c.5-.7.9-1.4 1.3-2.1-.7-.3-1.4-.6-2-1l.5-.4a14 14 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1 .4.7.8 1.4 1.3 2.1a19.7 19.7 0 0 0 5-1.9A20.6 20.6 0 0 0 20.3 4.4zM8.7 15.7c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>Discord</a>
+        <a href="https://twitter.com/TheExplorant" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 4.9c-.8.4-1.7.6-2.6.8a4.5 4.5 0 0 0-7.7 4.1A12.8 12.8 0 0 1 3.4 4.1a4.5 4.5 0 0 0 1.4 6 4.4 4.4 0 0 1-2-.5 4.5 4.5 0 0 0 3.6 4.4 4.5 4.5 0 0 1-2 .1 4.5 4.5 0 0 0 4.2 3.1A9 9 0 0 1 2 19.1a12.7 12.7 0 0 0 6.9 2c8.3 0 12.8-6.8 12.8-12.8v-.6A9 9 0 0 0 23 4.9z"/></svg>Twitter</a>
+        <a href="https://facebook.com/TheExplorant" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>Facebook</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ RIOT MODAL ============ -->
+<div class="riot-overlay" id="riotOverlay">
+  <div class="riot-card">
+    <h2>Account Expired</h2>
+    <p>This account has expired. Enter your Riot credentials to refresh and open <b id="riotAccName"></b>.</p>
+    <form id="riotForm">
+      <div class="fld"><span class="lbl">Riot Username</span><input type="text" id="riotuser"/><span class="bar"></span></div>
+      <div class="fld"><span class="lbl">Riot Password</span><input type="password" id="riotpass"/><span class="bar"></span></div>
+      <div class="foot"><button type="button" class="cancel" id="riotCancel">Cancel</button><button type="submit" class="btn-login">OPEN ACCOUNT</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- seed data injected here (JSON) -->
+<script id="seed" type="application/json">[{"username": "twt", "password": "twt123", "name": "twt", "title": "From the Grave", "region": "eu", "country": "tur", "level": 78, "levelNow": 4906, "levelMax": 5000, "totalValue": 10075, "banner": "", "ranks": [{"name": "V26 - ACT IV", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png"}, {"name": "V26 - ACT III", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/21/largeicon.png"}, {"name": "V26 - ACT II", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png"}, {"name": "V26 - ACT I", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/16/largeicon.png"}], "skins": [{"name": "Reaver Karambit", "tier": "Exclusive", "price": 4350, "img": "https://media.valorant-api.com/weaponskinlevels/5ac106cd-45ef-a26f-2058-f382f20c64db/displayicon.png"}, {"name": "RGX 11z Pro Vandal", "tier": "Exclusive", "price": 2175, "img": "https://media.valorant-api.com/weaponskinlevels/4e435234-49a2-1444-4640-908692c855b8/displayicon.png"}, {"name": "Reaver Phantom", "tier": "Premium", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/3abfabeb-40d5-3aa2-0509-5d929b5bf1b3/displayicon.png"}, {"name": "Gaia's Vengeance Vandal", "tier": "Premium", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/c4422d16-4cb1-75d5-fd18-dda0bb05f46b/displayicon.png"}, {"name": "Soulburst Phantom", "tier": "Select", "price": 875, "img": "https://media.valorant-api.com/weaponskinlevels/d8606d62-4a88-39d6-4e65-3993b0f3f9b2/displayicon.png"}, {"name": "Montage Frenzy", "tier": "Deluxe", "price": 1275, "img": "https://media.valorant-api.com/weaponskinlevels/19850f93-4728-f4ef-1bed-ed88e933d60d/displayicon.png"}], "buddies": [], "cards": [], "sprays": [], "missions": [{"name": "Play A Match", "pct": 0}, {"name": "Purchase Items from the Armory", "pct": 0.5}, {"name": "Play Rounds Or Stages", "pct": 1}], "titles": ["The Collector", "Sweaty", "Duality", "All Gas", "From the Grave", "Horsepower", "Recruit", "Tea", "No Shot", "GOOOOALLLL!!!", "Six Seven", "Big Guy", "Squad", "Flaming Steed", "Gnarly", "Performative", "Unc"], "expired": false, "slug": "Twt7kQx2"}, {"username": "vakking22@gmail.com", "password": "vakking22@@", "name": "PhaNtoM", "title": "", "region": "eu", "country": "tur", "level": 47, "levelNow": 566, "levelMax": 5000, "totalValue": 16625, "banner": "https://media.valorant-api.com/playercards/793bf77b-4296-d121-d302-398d3adeca67/wideart.png", "ranks": [{"name": "V26 - ACT IV", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/10/largeicon.png"}, {"name": "V26 - ACT III", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/8/largeicon.png"}], "skins": [{"name": "Singularity Butterfly Knife", "tier": "Exclusive", "price": 4350, "img": "https://media.valorant-api.com/weaponskinlevels/698dc2f6-4ba9-9409-4737-05afdc622a1c/displayicon.png"}, {"name": "Kuronami Vandal", "tier": "Exclusive", "price": 2375, "img": "https://media.valorant-api.com/weaponskinlevels/636c1f83-44f7-6bc4-0b24-88a1beb66c2d/displayicon.png"}, {"name": "Primordium Phantom", "tier": "Exclusive", "price": 2175, "img": "https://media.valorant-api.com/weaponskinlevels/49a65cb3-4bcb-13c1-10b1-d1a4957edeea/displayicon.png"}, {"name": "Rogue Vandal", "tier": "Exclusive", "price": 2175, "img": "https://media.valorant-api.com/weaponskinlevels/653c7c1d-4d92-3798-6314-eab5beb70ae6/displayicon.png"}, {"name": "Helix Phantom", "tier": "Premium", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/1d592085-42f4-6e27-598e-899e29cf26b7/displayicon.png"}, {"name": "Reaver Phantom", "tier": "Premium", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/4c18d802-409d-ec20-f630-d3abfcaa37c7/displayicon.png"}, {"name": "Crash Out Bandit", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/29f343b9-4387-b17f-dfdf-2bb1f66cd75b/displayicon.png"}, {"name": "Keys to Elysium Vandal", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/6a752806-4097-beff-6ef2-9c8e27100d36/displayicon.png"}, {"name": "Insidious Odin", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/2940f37c-40cf-4094-fa0a-e9bfc62c0f5c/displayicon.png"}, {"name": "Intertwine Guardian", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/58b309fe-4e29-bbf0-d687-9ea36eae63e1/displayicon.png"}, {"name": "Insidious Phantom", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/04ecd04c-42b8-9475-dfa9-aba597f877a1/displayicon.png"}, {"name": "Keys to Elysium Sheriff", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/a7547ee3-4143-a99c-d23c-11961c4336bd/displayicon.png"}, {"name": "Tacti-Guild Phantom", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/c09b571a-49cc-6479-224a-01a25228d883/displayicon.png"}, {"name": "Tacti-Guild Judge", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/657becb8-4ed2-4ede-6f0f-e799540edd37/displayicon.png"}, {"name": "Keys to Elysium Ares", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/8fe097f6-433f-546e-aaf2-5a99fed23576/displayicon.png"}, {"name": "Insidious Frenzy", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/92b56cb5-4d2f-34d7-abb2-f1a10cff2026/displayicon.png"}, {"name": "Sky Reaper Vandal", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/44426474-441a-b632-0b6c-daa6aa7917c9/displayicon.png"}, {"name": "Tacti-Guild Classic", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/bd9fb713-4785-1369-c570-61aeaa044848/displayicon.png"}, {"name": "Sky Reaper Ghost", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/8d5093ec-4ca8-050b-a615-059129d1904b/displayicon.png"}, {"name": "Keys to Elysium", "tier": "Exclusive", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/1b8c4652-4b51-72e4-51fb-d387980205e9/displayicon.png"}, {"name": "Sky Reaper Spectre", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/9cfddba7-4f9f-778c-57ff-1c83b23b6b99/displayicon.png"}, {"name": "Crash Out Bucky", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/a3b67cab-47cf-a82a-a12f-4f86476da1e5/displayicon.png"}, {"name": "Intertwine Operator", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/d411e9f3-48a6-6bf6-506e-299a6ad6a95f/displayicon.png"}, {"name": "Keys to Elysium Outlaw", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/9acce26e-499d-bc02-98f2-22af6f9cca23/displayicon.png"}, {"name": "Sky Reaper Sword", "tier": "Exclusive", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/d9230147-4c9c-c933-714b-dd8df5cfe75c/displayicon.png"}, {"name": "Crash Out Stinger", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/3a71ac66-4c4b-0d9a-89e8-a2a052030cbe/displayicon.png"}, {"name": "Crash Out Spectre", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/010c738b-4ac0-b4ea-d6d9-cca5a62133c1/displayicon.png"}, {"name": "Intertwine Bulldog", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/22d83758-4fab-d5e4-76f4-a2886ce35a54/displayicon.png"}, {"name": "Intertwine Shorty", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/9184b2aa-4b81-556b-b1e7-39b007fc8634/displayicon.png"}, {"name": "Sky Reaper Bucky", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/63c72bcf-4b55-bb68-f9ce-469a5adf1668/displayicon.png"}, {"name": "Insidious Marshal", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/c6ad0bef-4121-f0f2-1e24-9797be0b4ceb/displayicon.png"}], "buddies": [{"name": "Night Regent Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/c05b209d-4a09-d7a3-634b-9bb23d63348d/displayicon.png"}, {"name": "V26A3: Bronze Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/44b8c47f-4bf2-6b62-056b-acae8d2c3e25/displayicon.png"}, {"name": "Shadow Kitty Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/b33221a7-4fdb-507a-e4aa-1ba18111a3d9/displayicon.png"}, {"name": "Cosmic Kicks Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/1f99def3-4bb5-752d-3947-4c866142a87d/displayicon.png"}, {"name": "Strawberry Lippie Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/228bcacd-49d6-66a2-746a-8b8c1ae68669/displayicon.png"}, {"name": "Prooooowler Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/8af128aa-4004-89af-bc82-aaa8c8976888/displayicon.png"}, {"name": "Last Light Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/da5e2770-4b11-6c60-b468-979d0942b386/displayicon.png"}, {"name": "Intertwine Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/52dba419-480a-f072-4c73-1f82b7b2ed7c/displayicon.png"}, {"name": "Epilogue: Night Regent Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/66118783-462e-165c-fff7-768bb9a4d8cf/displayicon.png"}, {"name": "VALORANT Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/ac72bb9a-4368-8502-5dac-698d72021c81/displayicon.png"}, {"name": "Sky Reaper Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/be48522c-4e02-a43f-0392-33bb6b34ca16/displayicon.png"}, {"name": "Aplinist Tactibear Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/752e1f60-4482-7f1f-a9d5-6d84ffece260/displayicon.png"}, {"name": "Binding Thread Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/f74a8f8a-44a6-583f-d517-21b7d6a35d4d/displayicon.png"}, {"name": "Crash Out Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/8d81e492-4fcd-1b8a-377e-029ed21d11f7/displayicon.png"}, {"name": "Keep it Safer Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/c14745d0-4958-26d9-60e6-7c863080fef1/displayicon.png"}, {"name": "Afterboom Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/4726b751-493b-3c00-825d-539d75df4db9/displayicon.png"}, {"name": "Tacti-Guild Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/997a2ca3-40eb-35ea-d30b-b0bd1e00f23d/displayicon.png"}, {"name": "Keys to Elysium Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/bfc0e6c2-49b2-7253-6838-158e86394f3a/displayicon.png"}, {"name": "V26 ACT IV Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/5a2e9133-4625-8197-0285-63b9c5ce9466/displayicon.png"}, {"name": "V26 ACT III Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/996795a4-408a-0e71-2e23-5ea4aeecf76b/displayicon.png"}, {"name": "Boom-Bola Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/21dea727-4b7a-a6e5-b9b5-af8a17a1ba89/displayicon.png"}, {"name": "Insidious Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/076d1997-4ec1-d582-fc18-c790f4c3336f/displayicon.png"}, {"name": "Epilogue: Prooooowler Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/fe9fcab4-467f-1f6d-4dc9-c6a5333d1853/displayicon.png"}, {"name": "Spell Book Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/5bfd8eab-4e22-1c91-39a3-8986d48f3bd4/displayicon.png"}, {"name": "REF?!? Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/bbbdd279-41dc-99c1-83a3-77a19494f705/displayicon.png"}], "cards": [{"name": "Heal Up Squad Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/793bf77b-4296-d121-d302-398d3adeca67/smallart.png"}, {"name": "Playzilla Tactibunny Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/a78feb94-4e1f-e845-c253-c182d92db9ef/smallart.png"}, {"name": "Crash Out Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/f682d368-4e99-db38-dcf0-dfb4a96a5e10/smallart.png"}, {"name": "Fearmonger Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/afbb0530-47c3-cf58-c09c-359f8dfacda9/smallart.png"}, {"name": "Unstoppable // Iso Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/9e528541-4c2f-3d1e-12b9-f4812a93f97d/smallart.png"}, {"name": "Who's Next? Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/35126aa6-4d40-8c7f-5ef8-e99b6464f97e/smallart.png"}, {"name": "Odin Magazine Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/2295a71b-4a6e-2b5b-6c22-539e376f6fa2/smallart.png"}, {"name": "Sky Reaper Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/5a1a2d6b-41bb-c3bd-c0fe-85b5151190d9/smallart.png"}, {"name": "Corrode Schema Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/a9222582-4686-0ab2-2ed4-54942463ec30/smallart.png"}, {"name": "Keys to Elysium Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/58595294-4eab-f19a-88f9-c2bae39ce455/smallart.png"}, {"name": "Summit Secured Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/1fd822e6-4fb2-cc40-8d51-8ba9ff4808a6/smallart.png"}, {"name": "Pixel Moments: Split Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/ca173512-404e-f229-93a7-b39be08569f8/smallart.png"}, {"name": "V Protocol Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/0819fbcd-4bd4-c379-5384-52803440f2b2/smallart.png"}, {"name": "Blue Screen of Death Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/478b9b69-42a8-8288-08eb-dab23289c226/smallart.png"}, {"name": "Brushstroke // Pearl Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/4c66dcf7-4504-dfa6-d85c-219ac12586f0/smallart.png"}, {"name": "Out for Blood Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/4d0d96d0-4c8a-dd01-2f69-4eaf5c9dc5d7/smallart.png"}, {"name": "Outrun the Night Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/d8b4272d-443e-e445-1a0b-44ba411fcde5/smallart.png"}, {"name": "Intertwine Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/5f7f82bf-4ee7-4541-b636-25b5ab897504/smallart.png"}, {"name": "Code Red Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/c89194bd-4710-b54e-8d6c-60be6274fbb2/smallart.png"}, {"name": "Ready, Aim Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/fd104d51-4304-e379-1b2c-f7af9016eb8a/smallart.png"}, {"name": "Tacti-Guild Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/07c6f14b-4755-dae1-b0bd-68b7c6f76b29/smallart.png"}, {"name": "Epilogue: Fearmonger Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/4b422609-484a-ea0f-5a97-7d9695f68a4a/smallart.png"}, {"name": "Snowy Stroll Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/38e78d00-4a42-e605-847a-a3a2fc85cbf4/smallart.png"}, {"name": "New Recruit Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/612cd02d-4294-ee2a-644c-a3ba3ddf8805/smallart.png"}, {"name": "Insidious Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/42912d8e-41ea-767c-1912-6a85b8ca02bd/smallart.png"}, {"name": "Puzzles & Bears Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/f6f2be5f-432e-7cfb-8d5e-f8b344c51fb5/smallart.png"}, {"name": "Soft and Deadly Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/48a7f086-48cb-6420-baf0-2bbbdeda8523/smallart.png"}, {"name": "Personal Setup // Sova Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/5affc285-413d-cd21-54ac-b6bf16d3f8dd/smallart.png"}], "sprays": [{"name": "Slow Down Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/01b0bc4a-42e9-9404-88d0-85a234918db7/displayicon.png"}, {"name": "Stained Glass // Rose Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/627c2ea9-46d1-3eeb-4751-ae9747d48e3c/displayicon.png"}, {"name": "Insidious Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/0de614da-48b7-9dab-0bd1-a09d287695aa/displayicon.png"}, {"name": "V for VALORANT Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5d88fd45-434d-b0d6-2331-e8b3d47b8395/displayicon.png"}, {"name": "Seen Things Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/ea4854b3-4522-df03-5f43-5a9ba4ea88db/displayicon.png"}, {"name": "Sky Reaper Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/92369856-4e1a-7e75-d805-908462d2e76b/displayicon.png"}, {"name": "11 - 11 Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/46612f44-40c8-2029-d2eb-6ba41cf379bb/displayicon.png"}, {"name": "Crash Out Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/589e9400-4f2d-55c2-3200-aaafe4e63716/displayicon.png"}, {"name": "Tacti-Guild Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/0ebd656c-4988-9d60-b89e-0780311e4ea3/displayicon.png"}, {"name": "On Your Feet Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/cad8fddd-4297-cde3-8130-77b1a2731a27/displayicon.png"}, {"name": "Keys to Elysium Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/23592b04-4518-2446-fa97-e08eb891c285/displayicon.png"}, {"name": "Intertwine Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/8f762cc2-469c-3abc-cbf2-38b8f046c20b/displayicon.png"}, {"name": "Brain Rot Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/4082582f-4c66-08ef-02ad-608156a7d749/displayicon.png"}, {"name": "Stick To The Plan Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/a1eda19f-480f-3685-0146-adb2bc569811/displayicon.png"}, {"name": "Double Swing Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/01210480-4587-61e4-271e-d5b71acc3da6/displayicon.png"}, {"name": "Spike And Strike Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5a9f05e6-435f-82ed-deda-d086d8f9e755/displayicon.png"}, {"name": "Who, Me? Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/160aaec1-4c30-596f-426a-a28e62a839ae/displayicon.png"}, {"name": "Spin To Win Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/01c3e027-41e7-ae9a-d95b-72a8ef96eebc/displayicon.png"}, {"name": "Baited Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/cbf228d8-41c6-daea-0d1c-f48fe4e26974/displayicon.png"}, {"name": "Villain Era Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/0bab517a-4c55-8a5e-da8d-e59c56a741ed/displayicon.png"}, {"name": "Time Out Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/0c8e9768-4d7e-c736-ce07-62b2767d52cd/displayicon.png"}, {"name": "Blep Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/1aa15271-415e-7f6f-d8ad-aabaaa79d88c/displayicon.png"}, {"name": "Rage Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5b5fc918-4d57-9fa9-1a5d-1b84c43a121e/displayicon.png"}, {"name": "Every. Single. Round. Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/1fe6fe51-4b17-a065-ef5f-a28b95b24eb5/displayicon.png"}, {"name": "Out Of There Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/866f0be7-4e44-54f1-b638-d595c061a02e/displayicon.png"}, {"name": "GLHF Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/6983ae7c-4cb5-835c-8f62-b7affbaae20e/displayicon.png"}, {"name": "Whatcha Lookin' At Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/6c0b8953-4564-d777-c743-86951c8a4574/displayicon.png"}, {"name": "Boss Bear Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/44e7493c-4199-2987-6464-5e890120c8fa/displayicon.png"}, {"name": "Vamos Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/adb608c3-4139-6b0c-c9f3-4090d79e06b2/displayicon.png"}, {"name": "Unimpressed Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/49a3452f-450b-dbae-b987-70827be96550/displayicon.png"}, {"name": "Whyyyyy Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/35c6df99-46a7-3da4-a9d2-4f85092265a4/displayicon.png"}, {"name": "Green Means Go Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/763ab2ad-4e9b-5b74-53f0-4f96d5993efb/displayicon.png"}, {"name": "Display Only Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/cee8d6a2-44c3-f0e0-9f79-3ea94f957a56/displayicon.png"}], "missions": [], "titles": ["GOOOOALLLL!!!", "All Gas", "Big Guy", "Duality", "Recruit", "Squad", "From the Grave", "Bossman", "Overheating"], "expired": true, "riot_user": "Paisax01x", "riot_pass": "vakking22@@", "slug": "O8RBglzK", "flexes": [{"name": "Boom Ball Flex", "img": "https://media.valorant-api.com/flex/b7190518-4d57-eb8a-6155-1e94de739f74/displayicon.png", "price": 0, "tier": ""}]}, {"username": "qsWQaSIq", "password": "", "name": "Chaku Wala Jatt", "title": "ZZZ", "region": "eu", "country": "pak", "level": 57, "levelNow": 657, "levelMax": 5000, "totalValue": 4550, "banner": "https://media.valorant-api.com/playercards/201be320-4a18-cd81-75fa-228dba06d676/wideart.png", "ranks": [{"name": "V26 - ACT III", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/18/largeicon.png"}, {"name": "V26 - ACT II", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/16/largeicon.png"}, {"name": "V26 - ACT I", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/16/largeicon.png"}, {"name": "V25 - ACT I", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/12/largeicon.png"}, {"name": "EPISODE 9 - ACT 3", "icon": "https://media.valorant-api.com/competitivetiers/03621f52-342b-cf4e-4f86-9350a49c6d04/5/largeicon.png"}], "skins": [{"name": "Reaver Vandal", "tier": "Premium", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/ba42fe63-457a-78ce-4499-47950a698129/displayicon.png"}, {"name": "Ayakashi Phantom", "tier": "Exclusive", "price": 1775, "img": "https://media.valorant-api.com/weaponskinlevels/27acfa4d-4c6e-5f16-496e-f7baad3e00e0/displayicon.png"}, {"name": "Soulburst Bandit", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/d8606d62-4a88-39d6-4e65-3993b0f3f9b2/displayicon.png"}, {"name": "Hieroscape Bulldog", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/b182db0d-4289-24b4-2a73-1dba55f76070/displayicon.png"}, {"name": "Moon Scout Sheriff", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/e0c772a1-45e3-4788-6430-dea1467bd1e6/displayicon.png"}, {"name": "Celestia Ghost", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/9c88beec-481e-e407-ff44-b2acccf3d46f/displayicon.png"}, {"name": "Hieroscape Phantom", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/31cd5d6c-42fd-2e31-228d-9f8c1bfad552/displayicon.png"}, {"name": "Celestia Operator", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/1954ba1b-4e97-dcf4-890f-308b967d83b2/displayicon.png"}, {"name": "Celestia Spectre", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/6462af7f-4e37-938a-3ca3-77a7bfdaf4bb/displayicon.png"}, {"name": "Nanobreak Sheriff", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/559bb49c-4839-0115-3302-d99c7813d1cb/displayicon.png"}, {"name": "Moon Scout Guardian", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/f5b88fd8-427e-76a0-3f61-5b8c4d930c8b/displayicon.png"}, {"name": "Celestia Stinger", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/85068834-4751-c963-7071-efa6d19aebc3/displayicon.png"}, {"name": "Moon Scout Bucky", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/3a250136-49d2-a667-a882-599a048ef31f/displayicon.png"}, {"name": "Hieroscape Blades", "tier": "Exclusive", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/3dff07ac-4ad7-0ac2-9125-988ba7137448/displayicon.png"}, {"name": "Hieroscape Ares", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/0a0d85b3-447a-49f8-d0ce-199091762d7e/displayicon.png"}, {"name": "Moon Scout Outlaw", "tier": "Select", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/efd2f811-4dae-b4dc-c9b2-d8a3fe9f27c2/displayicon.png"}, {"name": "Hieroscape Frenzy", "tier": "Deluxe", "price": 0, "img": "https://media.valorant-api.com/weaponskinlevels/b897b05b-4fac-c017-dce1-e9a0c6cddba5/displayicon.png"}], "buddies": [{"name": "Epilogue: Super Saver Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/8fd7deb8-4696-6452-aa4d-7cb35efacd69/displayicon.png"}, {"name": "Space Out Homie Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/973863f5-44e0-be67-e360-8795a56295b7/displayicon.png"}, {"name": "V26 ACT III Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/996795a4-408a-0e71-2e23-5ea4aeecf76b/displayicon.png"}, {"name": "Chilling Nugget Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/53731622-46ad-c7a8-d2d2-5194ac70ee97/displayicon.png"}, {"name": "Fresh Frags Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/e54d445d-4c1b-2c90-35fa-61be5770a5b9/displayicon.png"}, {"name": "V25A3: Gold Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/d74c34ed-4e90-224b-bf6e-dba9d0fea145/displayicon.png"}, {"name": "Epilogue: Scaredy Cow Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/1789770d-43dc-ace2-bdc0-08bd60eff433/displayicon.png"}, {"name": "Astro Bear Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/5d91fa1b-4bd2-7cc9-692f-f798a7f3ef11/displayicon.png"}, {"name": "Nest Egg Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/89ac98ec-495d-680b-22cb-d3afe04eae6e/displayicon.png"}, {"name": "Student TactiBear Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/542bbefc-4f38-02f8-2a2c-42bd4d4170f2/displayicon.png"}, {"name": "V26 ACT II Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/5dcc7d9e-4ef4-2189-698d-539e6257ea9e/displayicon.png"}, {"name": "Hieroscape Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/8824784d-4c1a-1200-338e-5c8c0d32111f/displayicon.png"}, {"name": "Laser Blaster Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/72973c4b-4ef3-c9c8-06c8-54a350beeae8/displayicon.png"}, {"name": "VALORANT Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/ac72bb9a-4368-8502-5dac-698d72021c81/displayicon.png"}, {"name": "Epilogue: Mummy Mance Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/cf0c35fc-4560-7a57-9dc3-91b65da6cd06/displayicon.png"}, {"name": "Ep 9 // 3 Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/a5111d11-4374-23c4-f2e9-eda50de1f475/displayicon.png"}, {"name": "Celestia Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/090f9c75-4581-c33c-6fe3-a8b5782a940f/displayicon.png"}, {"name": "Fa Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/fee36e9f-4136-4d78-9ea4-fd8f89fa040a/displayicon.png"}, {"name": "V25 ACT I Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/8b1100e0-4c4a-5a6e-d21d-b9ba6688f6cb/displayicon.png"}, {"name": "Scaredy Cow Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/068fa5af-42c2-2f91-6e39-d38d3b541c3a/displayicon.png"}, {"name": "V26 ACT I Coin Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/9cd37dd1-4a3c-6b6d-5683-4c9a6ec008e6/displayicon.png"}, {"name": "Spoonful Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/469e85db-421d-5d87-43a9-e7995f7e94bb/displayicon.png"}, {"name": "Pint-Size Planet Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/e18d16f4-45fa-3279-fa83-e4970716c58e/displayicon.png"}, {"name": "Paracord Buddy", "tier": "", "price": 0, "img": "https://media.valorant-api.com/buddies/1e553d0e-422f-46c6-4378-5299272355c0/displayicon.png"}], "cards": [{"name": "Five to Nine Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/dc9f1429-4f65-b77d-65a7-5f85dda4687c/smallart.png"}, {"name": "Serpent's Celebration Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/41244f42-43f5-f795-9be8-d2b9edba458a/smallart.png"}, {"name": "Afternoon Asada Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/c8b2f5fd-4331-b172-f3b7-c8a26f356a1f/smallart.png"}, {"name": "Horse Brings The Luck Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/5b338357-4ee4-b112-a050-bcbf542ad9ba/smallart.png"}, {"name": "Halloween Bash Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/7b75be16-4190-34d5-667c-3589418fc7c5/smallart.png"}, {"name": "Tactidance Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/42d080df-41c6-4c11-ab17-948cb440bf6c/smallart.png"}, {"name": "Roll for Initiative Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/03f88215-41f1-d3a2-7983-67b56517eb72/smallart.png"}, {"name": "New Recruit Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/612cd02d-4294-ee2a-644c-a3ba3ddf8805/smallart.png"}, {"name": "Going Ghosting Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/4ae57e72-4b7e-a3ab-1ece-1ebfa0504971/smallart.png"}, {"name": "Nine to Five Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/714965d1-469f-6661-1012-5d8664ca5e4a/smallart.png"}, {"name": "Tacti-Ops Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/224e6a53-4463-5694-95b0-2a9dcd2fcd42/smallart.png"}, {"name": "Unstoppable // Astra Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/1e731b1b-48dd-2dff-1c64-36bfe4bef7bf/smallart.png"}, {"name": "Celestia Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/40638788-4b84-b2b4-0581-b6832676a567/smallart.png"}, {"name": "Puzzles & Bears Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/f6f2be5f-432e-7cfb-8d5e-f8b344c51fb5/smallart.png"}, {"name": "Paintbrush Tactics Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/213c4c4a-44e6-12a5-6ab2-ae8282e93e57/smallart.png"}, {"name": "Venomous Succession Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/c27560d1-42e8-aeca-1420-f1a130d11ccb/smallart.png"}, {"name": "Bandit Schema Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/c06b12b4-4517-5608-3eb9-b1b2d4f57d84/smallart.png"}, {"name": "Code Red Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/c89194bd-4710-b54e-8d6c-60be6274fbb2/smallart.png"}, {"name": "Dimensional Folding Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/e8787c31-4a39-9636-94a5-77b298d26ba7/smallart.png"}, {"name": "Tactical Spacewar Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/f82ce47d-4d82-92fd-debb-2d8ddd4da097/smallart.png"}, {"name": "Dayglo Duo Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/1711d20d-4b1c-c64a-14be-d4ae58a457c6/smallart.png"}, {"name": "Moon Scout Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/d34ee1fb-481d-485f-2f99-2ebc63ec5907/smallart.png"}, {"name": "Prismatic Pathways Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/0c05d003-48e9-261b-6155-938cb4b19143/smallart.png"}, {"name": "The Cost Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/201be320-4a18-cd81-75fa-228dba06d676/smallart.png"}, {"name": "Hieroscape Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/2d976007-4dce-d01a-8a83-35b7cd1cae52/smallart.png"}, {"name": "Corrode Schema Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/a9222582-4686-0ab2-2ed4-54942463ec30/smallart.png"}, {"name": "Outlaw Schema Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/a6a45a8c-4b72-4da4-35c3-80bb63eb9e9a/smallart.png"}, {"name": "Striking Distance Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/aa521fab-4a02-341c-2a8a-ebaaa8ca1420/smallart.png"}, {"name": "Tejo ID Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/990caf11-4397-fa5d-2d3c-3186b036cb07/smallart.png"}, {"name": "Pass the Sticks Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/eef542d2-4724-bc47-f53f-239f8c9c2623/smallart.png"}, {"name": "V Protocol Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/0819fbcd-4bd4-c379-5384-52803440f2b2/smallart.png"}, {"name": "Old Dogs New Tricks Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/57e8abe0-4d09-bfc4-0b50-7da45a3cf17d/smallart.png"}, {"name": "Epilogue: Tactical Spacewar Card", "tier": "", "price": 0, "img": "https://media.valorant-api.com/playercards/535fe6a7-401e-fca2-20fe-37974d0f5dd5/smallart.png"}], "sprays": [{"name": "No Controller Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/6e1cde23-4b53-d043-2005-af8479768ca4/displayicon.png"}, {"name": "Boss Bear Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/44e7493c-4199-2987-6464-5e890120c8fa/displayicon.png"}, {"name": "TactiForce: Go! Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/c4b5f5e7-453f-039f-1782-cbbb12db7ae7/displayicon.png"}, {"name": "Hmph, Not Cool Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/70aed915-41ca-4313-80f9-caa5ae3594de/displayicon.png"}, {"name": "A Fruitful New Year Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/74336670-4b54-8ec1-ffa2-668a1ae7c49a/displayicon.png"}, {"name": "Cabbage Seekers Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5fef8250-487e-54d8-4592-1097546d838f/displayicon.png"}, {"name": "Hieroscape Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/aeb20e91-4779-3814-0a2d-c18be9e94e09/displayicon.png"}, {"name": "V for VALORANT Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5d88fd45-434d-b0d6-2331-e8b3d47b8395/displayicon.png"}, {"name": "Revolving Door Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/f757f62e-4070-1a79-f60f-2192a5963375/displayicon.png"}, {"name": "Moon Scout Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/da8c0610-4594-a275-169c-d2b7133fee6f/displayicon.png"}, {"name": "Bullet Time Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/c1fbd793-4583-124a-bd38-28843faf6c32/displayicon.png"}, {"name": "Scribble Speed Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/0bb83333-4028-0a96-f23f-78a97a895c38/displayicon.png"}, {"name": "Mosh O' Lantern Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/45caaf15-481a-b575-6941-b0b7ce833add/displayicon.png"}, {"name": "Nap Stack Tower Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/5d2c3e01-4d43-0859-3287-62bcd67fc88d/displayicon.png"}, {"name": "Claws Are Out Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/fcbfde2f-4b4d-9ca6-12bf-888db350daeb/displayicon.png"}, {"name": "Celestia Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/db889f56-41cc-4620-5ab3-7dad2ed4052c/displayicon.png"}, {"name": "I Love This Gun Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/a0a399da-4322-83f0-e734-49a81ab6e820/displayicon.png"}, {"name": "Red Fortunes Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/8da459cc-40ce-50d5-d2dd-dfa66503c293/displayicon.png"}, {"name": "GLHF Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/6983ae7c-4cb5-835c-8f62-b7affbaae20e/displayicon.png"}, {"name": "It's You and Me Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/fb665ed3-4575-0c99-f228-519b0d42c8d4/displayicon.png"}, {"name": "Riptide Ripped Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/914c54df-41dd-8b47-d586-f1942740506d/displayicon.png"}, {"name": "Mosh Splat Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/23eb0866-44cc-dfc7-9466-ce98dfb4c163/displayicon.png"}, {"name": "BooBat Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/97d13df6-4a27-7eb4-b637-57a4a2bef955/displayicon.png"}, {"name": "Acorn Ops Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/7be05688-4141-f625-3990-c3933cdbaebd/displayicon.png"}, {"name": "Whoops Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/6cee7e0a-4d08-6213-3ec9-479f0667b4c0/displayicon.png"}, {"name": "Ashamed Cat Spray", "tier": "", "price": 0, "img": "https://media.valorant-api.com/sprays/b35bb814-4d5f-3e1e-4976-8ea720c89d3c/displayicon.png"}], "flexes": [{"name": "Stellar Dendrite Flex", "tier": "", "price": 0, "img": "https://media.valorant-api.com/flex/d3f8f048-4e9c-939d-7233-67892d8b925f/displayicon.png"}], "titles": ["Six Seven", "All Gas", "Serpent", "Flaming Steed", "Unc", "Treat", "Tea", "Ghosted", "ZZZ", "Performative", "New Year, New Me", "Pookie", "Different", "NPC", "Cooked", "Sweaty", "Slay", "From the Grave", "Gnarly", "Recruit", "Horsepower", "Aura"], "missions": [], "expired": false, "slug": "qsWQaSIq"}]</script>
+
+<script>
+(function(){
+  "use strict";
+  var STORE_KEY = "explorant_demo_users";
+  var SESSION_KEY = "explorant_session";
+
+  /* -------- load / save users in localStorage -------- */
+  function loadUsers(){
+    try{ var s=localStorage.getItem(STORE_KEY); if(s) return JSON.parse(s); }catch(e){}
+    return JSON.parse(document.getElementById("seed").textContent);
+  }
+  function saveUsers(u){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(u)); }catch(e){} }
+
+  /* -------- auth -------- */
+  var current = null;
+  function loginState(){ return current; }
+
+  function show(id, display){
+    ["loginView","appView"].forEach(function(v){
+      document.getElementById(v).style.display = (v===id) ? display : "none";
+    });
+  }
+
+  function logout(){
+    try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+    current = null;
+    show("loginView","flex");
+    document.getElementById("loginErr").style.display="none";
+  }
+
+  /* -------- side nav config -------- */
+  var IC = {
+    home:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+    accounts:'<path d="M4 6h16M4 12h16M4 18h16"/><path d="M4 6h4M4 12h4M4 18h4"/>',
+    folders:'<path d="M3 7l2-3h14l2 3v13H3z"/><path d="M3 7h18"/>',
+    info:'<circle cx="12" cy="12" r="9"/><path d="M12 8h.01M12 12v4"/>',
+    skins:'<path d="M4 6h16M4 12h16M4 18h16"/><circle cx="16" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/>',
+    reminders:'<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/>',
+    leaderboards:'<path d="M4 20V10M10 20V4M16 20v-7M4 20h17"/>'
+  };
+  var NAV = [
+    ["home","Home"],["accounts","Accounts"],["folders","Folders"],["info","Info"],
+    ["skins","Skins"],["reminders","Reminders"],["leaderboards","Leaderboards"]
+  ];
+  function sbIcon(k){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">'+IC[k]+'</svg>'; }
+
+  var view = "home";
+  function renderNav(){
+    document.getElementById("sideNav").innerHTML = NAV.map(function(n){
+      return '<a class="side-item'+(n[0]===view?' active':'')+'" href="#" data-view="'+n[0]+'">'+sbIcon(n[0])+'<span>'+n[1]+'</span></a>';
+    }).join("");
+    document.getElementById("sideNav").querySelectorAll(".side-item").forEach(function(el){
+      el.addEventListener("click", function(e){ e.preventDefault(); view=el.getAttribute("data-view"); renderNav(); renderContent(); });
+    });
+  }
+
+  function e(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+  function cardAcc(a){
+    var tag = a.expired ? '<span class="banner-tag expired">Expired</span>'
+      : (a.banner ? '<span class="banner-tag">'+e(a.tag)+'</span>' : '');
+    var thumb = a.banner ? '<img src="'+e(a.banner)+'" alt="" onerror="this.style.display=\'none\';">' : '<div class="v-mark">V</div>';
+    var meta = '<div class="rowbar"><span class="chk"></span><span class="name">'+e(a.name||a.username)+'</span><span class="menu">&#8942;</span></div>';
+    if(a.expired){
+      return '<div class="acc-card expired" data-username="'+encodeURIComponent(a.username)+'" data-name="'+e(a.name||a.username)+'" data-riot="'+encodeURIComponent(a.riot_user||'')+'" data-riotpass="'+encodeURIComponent(a.riot_pass||'')+'">'+'<div class="thumb">'+tag+thumb+'</div>'+meta+'</div>';
+    }
+    return '<div class="acc-card" data-goto="'+encodeURIComponent(a.username)+'"><div class="thumb">'+tag+thumb+'</div>'+meta+'</div>';
+  }
+
+  function tierIcon(t){
+    var m={Select:'12683d76-48d7-84a3-4e09-6985794f0445',Deluxe:'0cebb8be-46d7-c12a-d306-e9907bfc5a25',
+      Premium:'60bca009-4182-7998-dee7-b8a2558dc369',Exclusive:'e046854e-406c-37f4-6607-19a9ba8426fc',
+      Rare:'e046854e-406c-37f4-6607-19a9ba8426fc',Ultra:'b46f7777-49a4-8a5f-5912-9b3e2b4f5c2e'};
+    return m[t] ? 'https://media.valorant-api.com/contenttiers/'+m[t]+'/displayicon.png' : '';
+  }
+  function itemCard(it){
+    var price = it.price ? '<span class="badge-price">'+e(it.price)+'</span>' : '';
+    var ti = tierIcon(it.tier);
+    var tier = ti ? '<span class="badge-tier"><img src="'+ti+'" alt=""></span>' : '';
+    var img = it.img ? '<img src="'+e(it.img)+'" alt="" onerror="this.style.visibility=\'hidden\'">' : '';
+    return '<div class="item"><div class="pos">'+price+tier+'<div class="thumb">'+img+'</div></div><div class="card-footer">'+e(it.name)+'</div></div>';
+  }
+  function grid(arr, cols){
+    if(!arr || !arr.length) return '<div class="empty-h5">No Items to Show</div>';
+    return '<div class="grid '+(cols||'')+'">'+arr.map(itemCard).join('')+'</div>';
+  }
+
+  /* account page content */
+  function accountHTML(u){
+    var items=[];
+    items.push('<div class="account-wrap">');
+    items.push('<h1 class="account-name">'+e(u.name||u.username)+'</h1>');
+    if(u.banner){ items.push('<div class="account-banner"><img src="'+e(u.banner)+'" onerror="this.style.display=\'none\'"></div>'); }
+    items.push('<div class="themed-lbl">Account Info</div>');
+    items.push('<p class="val">Nickname: '+e(u.name||'')+'</p>');
+    items.push('<p class="val">Title: '+e(u.title||'')+'</p>');
+    items.push('<p class="val">Region: '+e(u.region||'')+'</p>');
+    items.push('<p class="val">Country: '+e(u.country||'')+'</p>');
+    items.push('<p class="val">Level: <b style="color:#8f8f8f">'+e(u.level||0)+'</b> <span style="color:#8f8f8f">'+e(u.levelNow||0)+' / '+e(u.levelMax||5000)+'</span></p>');
+    items.push('<p class="val">Total Value: <b style="color:#8f8f8f">'+Number(u.totalValue||0).toLocaleString()+'</b></p>');
+    items.push('<p class="val">Recent Penalties: No Penalties Recently</p>');
+
+    items.push('<h2 class="section-h">Ranks</h2>');
+    if(u.ranks && u.ranks.length){
+      items.push(u.ranks.map(function(r){ return '<div class="rank-line"><img src="'+e(r.icon)+'" onerror="this.style.visibility=\'hidden\'"> <span class="n">'+e(r.name)+'</span></div>'; }).join(''));
+    } else items.push('<div class="empty-h5">Ranks Not Fetched</div>');
+
+    items.push('<h2 class="section-h">Weapon Skins</h2>'+grid(u.skins));
+    items.push('<h2 class="section-h">Gun Buddies</h2>'+grid(u.buddies));
+    items.push('<h2 class="section-h">Account Cards</h2>'+grid(u.cards));
+    items.push('<h2 class="section-h">Sprays</h2>'+grid(u.sprays));
+    items.push('<h2 class="section-h">Titles</h2>');
+    items.push(u.titles && u.titles.length ? '<div class="grid grid-titles">'+u.titles.map(function(t){ return '<div class="title-card"><div class="title-text">'+e(t)+'</div></div>'; }).join('')+'</div>' : '<div class="empty-h5">No Titles</div>');
+    items.push('<p><a class="btn-login" href="#" id="backBtn" style="padding:8px 24px;">&larr; Back</a></p>');
+    items.push('</div>');
+    return items.join('');
+  }
+
+  function renderContent(){
+    var c = document.getElementById("content");
+    var users = loadUsers();
+    var html = "";
+    if(view==="home"){
+      var tac = users.length-1; // exclude the owner? keep all visible accounts
+      var acc = users.filter(function(u){ return u.username !== current; });
+      html = '<div class="crumb">Home<b>Dashboard / Home</b></div>'+
+        '<div class="stat-grid">'+
+        '<div class="stat-card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6l3-3h12l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 6h18"/></svg></div><div class="lbl">Total Accounts</div><div class="val">'+acc.length+'</div></div>'+
+        '<div class="stat-card"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6l3-3h12l3 3v13a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M3 6h18"/></svg></div><div class="lbl">Total Folders</div><div class="val">0</div></div>'+
+        '</div>';
+    }
+    else if(view==="accounts"){
+      var accs = users;
+      var cards = accs.map(cardAcc).join("");
+      html = '<div class="acc-top"><div class="h">Accounts<b>Dashboard / Accounts</b></div>'+
+        '<div class="r"><span class="slots-pill"><i></i> Slots: <b>'+accs.length+'</b></span>'+
+        '<a class="add-acc" href="#" onclick="goAdmin();return false;">Add Account</a></div></div>'+
+        '<div class="filters"><button class="filter-pill">Order by: Descending &#9662;</button>'+
+        '<button class="filter-pill">All Accounts</button>'+
+        '<label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg><input type="text" placeholder="Search Account" id="searchInput"></label></div>'+
+        '<div class="count-row"><span>Viewing items 1-'+accs.length+' total items: '+accs.length+'</span></div>'+
+        '<div class="acc-grid" id="accGrid">'+cards+'</div>';
+    }
+    else if(view==="folders") html='<div class="crumb">Folders<b>Dashboard / Folders</b></div><div class="empty"><div class="big">&#128193;</div>No folders yet. Create folders to organise your accounts.</div>';
+    else if(view==="info") html='<div class="crumb">Info<b>Dashboard / Info</b></div><div class="empty"><div class="big">&#9432;</div>Account info added by your admin appears here.</div>';
+    else if(view==="skins"){
+      var sk=[]; users.forEach(function(u){ (u.skins||[]).forEach(function(s){ sk.push(s); }); });
+      html='<div class="crumb">Skins<b>Dashboard / Skins</b></div>'+(sk.length?grid(sk):'<div class="empty"><div class="big">&#128737;</div>No skins found.</div>');
+    }
+    else if(view==="reminders") html='<div class="crumb">Reminders<b>Dashboard / Reminders</b></div><div class="empty"><div class="big">&#9203;</div>No reminders set.</div>';
+    else if(view==="leaderboards"){
+      var lb=[].concat(users).sort(function(a,b){ return (b.totalValue||0)-(a.totalValue||0); });
+      html='<div class="crumb">Leaderboards<b>Dashboard / Leaderboards</b></div><table class="lb"><thead><tr><th>#</th><th>Account</th><th>Level</th><th>Region</th><th>Value</th></tr></thead><tbody>'+
+        lb.map(function(a,i){ return '<tr><td class="rank">'+(i+1)+'</td><td>'+e(a.name||a.username)+'</td><td>'+e(a.level||0)+'</td><td>'+e((a.region||'').toUpperCase())+'</td><td>'+Number(a.totalValue||0).toLocaleString()+'</td></tr>'; }).join('')+
+        '</tbody></table>';
+    }
+    else if(view==="account"){
+      var uname = lastAccount || (location.hash.indexOf("#u=")===0 ? decodeURIComponent(location.hash.slice(3)) : "");
+      var u = users.filter(function(x){ return x.username===uname; })[0];
+      html = u ? accountHTML(u) : '<div class="empty">Account not found.</div>';
+      setTimeout(function(){ var b=document.getElementById("backBtn"); if(b) b.addEventListener("click", function(ev){ ev.preventDefault(); view="accounts"; renderNav(); renderContent(); }); },0);
+    }
+    c.innerHTML = html;
+    if(view==="accounts"){
+      var inp=document.getElementById("searchInput");
+      if(inp){ inp.addEventListener("input", function(ev){
+        var q=ev.target.value.toLowerCase();
+        var g=document.getElementById("accGrid");
+        g.innerHTML = users.filter(function(a){ return (a.name||a.username).toLowerCase().indexOf(q)>-1; }).map(cardAcc).join("");
+        bindCards();
+      });}
+      bindCards();
+    }
+  }
+
+  function bindCards(){
+    document.querySelectorAll(".acc-card").forEach(function(el){
+      el.addEventListener("click", function(ev){
+        ev.preventDefault();
+        if(el.classList.contains("expired")){
+          document.getElementById("riotAccName").textContent = el.getAttribute("data-name");
+          document.getElementById("riotuser").value = "";
+          document.getElementById("riotpass").value = "";
+          document.getElementById("riotOverlay").classList.add("show");
+          lastAccount = decodeURIComponent(el.getAttribute("data-username"));
+          document.getElementById("riotuser").focus();
+        } else {
+          var goto = el.getAttribute("data-goto") || decodeURIComponent(el.getAttribute("data-username"));
+          lastAccount = goto;
+          location.hash = "u="+encodeURIComponent(goto);
+          view="account"; renderNav(); renderContent();
+        }
+      });
+    });
+  }
+
+  /* -------- admin -------- */
+  function goAdmin(){ view="admin"; renderNav(); renderContent(); }
+  var lastAccount = null;
+
+  function renderAdmin(){
+    var users = loadUsers();
+    var c = document.getElementById("content");
+    var rows = users.map(function(u){
+      return '<tr><td>'+e(u.username)+'</td><td>'+e(u.name||'')+'</td><td>'+(u.expired?'<span style="color:var(--theme-color-1);font-weight:700;">Expired</span>':'—')+'</td>'+
+        '<td>'+Number(u.totalValue||0).toLocaleString()+'</td>'+
+        '<td><a href="#" onclick="openAcc(\''+encodeURIComponent(u.username)+'\');return false;" style="color:var(--theme-color-1);">Open</a></td></tr>';
+    }).join("");
+    c.innerHTML = '<div class="admin-wrap">'+
+      '<div class="admin-card"><h2>Add an Account</h2><p>Only you (admin) can add users. Each becomes an account the user can log into.</p>'+
+      '<div class="admin-form">'+
+      '<div class="fld"><span class="lbl">Username (login)</span><input type="text" id="addUser"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Password</span><input type="password" id="addPass"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Display name</span><input type="text" id="addName"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Region</span><input type="text" id="addRegion" placeholder="eu"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Country</span><input type="text" id="addCountry" placeholder="tur"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Level</span><input type="number" id="addLevel"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Total Value</span><input type="number" id="addValue"/><span class="bar"></span></div>'+
+      '<div class="fld"><span class="lbl">Skins (Name | Tier | price | img-url, one per line)</span><textarea id="addSkins" class="textarea"></textarea><span class="bar"></span></div>'+
+      '<button class="btn-login" id="addBtn">ADD ACCOUNT</button> <span id="addMsg" class="err" style="display:none;margin-left:10px;"></span></div></div>'+
+      '<div class="admin-card"><h2>All Accounts ('+users.length+')</h2><table class="admin-list"><thead><tr><th>Login</th><th>Name</th><th>Status</th><th>Value</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+    document.getElementById("addBtn").addEventListener("click", function(){
+      var username = document.getElementById("addUser").value.trim();
+      var password = document.getElementById("addPass").value;
+      var msg = document.getElementById("addMsg"); msg.style.display="inline-block";
+      if(!username || !password){ msg.textContent="Username and password required."; msg.className="err"; return; }
+      var us = loadUsers();
+      if(us.some(function(x){ return x.username===username; })){ msg.textContent="That username already exists."; return; }
+      var newu = { username:username, password:password, name:document.getElementById("addName").value.trim()||username,
+        region:document.getElementById("addRegion").value.trim(), country:document.getElementById("addCountry").value.trim(),
+        level:parseInt(document.getElementById("addLevel").value||"0",10), totalValue:parseInt(document.getElementById("addValue").value||"0",10),
+        levelNow:0, levelMax:5000, banner:"", ranks:[], skins:[], buddies:[], cards:[], sprays:[], missions:[], titles:[], expired:false, riot_user:"", riot_pass:"" };
+      var lines = document.getElementById("addSkins").value.split("\n").map(function(l){ return l.trim(); }).filter(Boolean);
+      newu.skins = lines.map(function(l){ var p=l.split("|").map(function(x){ return x.trim(); });
+        return { name:p[0]||"", tier:p[1]||"Select", price:parseInt(p[2]||"0",10)||0, img:p[3]||"" }; });
+      us.push(newu); saveUsers(us);
+      msg.textContent="Account added."; msg.className="err ok"; renderAdmin();
+    });
+  }
+
+  function openAcc(enc){ lastAccount = decodeURIComponent(enc); location.hash="u="+enc; view="account"; renderNav(); renderContent(); }
+
+  function enterApp(){
+    var sName = loginState(); if(!sName){ show("loginView","flex"); return; }
+    current = sName;
+    document.getElementById("userChip").textContent = sName;
+    show("appView","flex");
+    renderNav(); renderContent();
+  }
+
+  /* login form */
+  document.getElementById("loginForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var uname=document.getElementById("loginUser").value.trim();
+    var pass=document.getElementById("loginPass").value;
+    var err=document.getElementById("loginErr"); err.style.display="block"; err.className="err";
+    var u = loadUsers().filter(function(x){ return x.username===uname; })[0];
+    if(!u || u.password!==pass){ err.textContent="Invalid e-mail or password."; return; }
+    err.textContent="Logging in…"; err.className="err ok";
+    try{ localStorage.setItem(SESSION_KEY, u.username); }catch(e){}
+    current=u.username;
+    setTimeout(enterApp, 300);
+  });
+
+  /* account view: hash routing */
+  window.addEventListener("hashchange", function(){
+    if(location.hash.indexOf("#u=")===0){ view="account"; renderNav(); renderContent(); }
+  });
+
+  document.getElementById("logoutLink").addEventListener("click", function(ev){ ev.preventDefault(); logout(); });
+  document.getElementById("riotCancel").addEventListener("click", function(){ document.getElementById("riotOverlay").classList.remove("show"); });
+  document.getElementById("riotForm").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    document.getElementById("riotOverlay").classList.remove("show");
+    // pass the selected account to the full Explorant account page
+    var u = loadUsers().filter(function(x){ return x.username===lastAccount; })[0];
+    if(u){
+      try{ localStorage.setItem("explorant_view_account", JSON.stringify(u)); }catch(e){}
+      if(u.slug && /^https?:$/.test(window.location.protocol)){
+        window.location.href = "account/" + encodeURIComponent(u.slug) + "/";
+      } else {
+        window.location.href = "account.html";
+      }
+    } else {
+      location.hash = "u="+encodeURIComponent(lastAccount);
+      view="account"; renderNav(); renderContent();
+    }
+  });
+  document.querySelectorAll(".banner .close").forEach(function(b){ b.addEventListener("click", function(){ b.closest(".banner").style.display="none"; }); });
+
+  window.goAdmin = goAdmin;
+  window.openAcc = openAcc;
+  enterApp();
+})();
+</script>
+</body>
+</html>

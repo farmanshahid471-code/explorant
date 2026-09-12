@@ -1,0 +1,228 @@
+
+  /* =====================================================================
+     THEME — exact values copied from the original site's eighthStyle.css
+     (:root palette) and custom.css (.text-theme accent).
+     Change any --variable here to re-skin the whole page instantly.
+     ------------------------------------------------------------------ */
+  @import url('https://fonts.googleapis.com/css?family=Nunito:300,400,600,700');
+
+  :root{
+    --theme-color-1: #dd3f4c;                 /* main accent (red)      */
+    --theme-color-2: #aa5e6c;                 /* accent shade 2         */
+    --theme-color-3: #a5456d;                 /* accent shade 3         */
+    --primary-color: #8f8f8f;                 /* body text              */
+    --foreground-color: #2a2828;              /* card / panel bg        */
+    --separator-color: #424242;               /* borders                */
+    --page-bg: #222020;                       /* page background (logo bg) */
+    --tab-inactive: #707070;                  /* inactive tab text      */
+    --card-strong: #2e2c2c;                   /* slightly lighter bg    */
+    --heading: #ffffff;                       /* headings / item names  */
+  }
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--primary-color);
+    font-family:"Nunito", "Segoe UI", Roboto, -apple-system, Helvetica, Arial, sans-serif;
+    font-size:.85rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;text-decoration:none;}
+  *{box-sizing:border-box;}
+
+  /* ============ TOP NAVBAR ============ */
+  .navbar{
+    position:fixed;top:0;left:0;right:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;
+    height:68px;padding:0 24px;
+    background:var(--page-bg);               /* matches the logo bg so it blends seamlessly */
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--separator-color);
+  }
+  .join-btn{
+    background:transparent;color:#dd3f4c;
+    border:1px solid #dd3f4c;border-radius:4px;
+    padding:8px 18px;font-size:13px;font-weight:600;cursor:pointer;
+    letter-spacing:.4px;transition:.15s;font-family:inherit;
+  }
+  .join-btn:hover{background:#dd3f4c;color:#fff;}
+  .navbar-logo{
+    display:flex;align-items:center;
+  }
+  .navbar-logo .brand{
+    height:62px;width:auto;display:block;   /* the Explorant logo image */
+  }
+  .navbar-right .user{display:flex;align-items:center;gap:14px;font-size:14px;color:#8f8f8f;font-weight:400;}
+  .navbar-right .user .ava-img{
+    width:40px;height:40px;border-radius:50%;
+    object-fit:cover;display:block;
+    background:#222020;
+    border:1px solid #333;
+  }
+
+  /* ============ MAIN LAYOUT ============ */
+  main{padding-top:104px;max-width:1320px;margin:0 auto;padding-left:28px;padding-right:28px;}
+  h1.account-name{margin:0 0 14px;font-family:'Nunito', sans-serif;font-size:2.1rem;font-weight:300;letter-spacing:1.5px;color:#8f8f8f;}
+  h1.account-name small{font-size:14px;color:var(--primary-color);font-weight:500;letter-spacing:.5px;margin-left:10px;vertical-align:middle;}
+
+  /* ============ TABS (exact separator-tabs styling) ============ */
+  .tabs{
+    display:flex;flex-wrap:wrap;gap:0;
+    border-bottom:1px solid var(--separator-color);
+    margin-bottom:28px;
+  }
+  .tab{
+    padding:9px 0;font-family:'Nunito', sans-serif;font-size:15px;font-weight:600;letter-spacing:.5px;
+    color:var(--tab-inactive);cursor:pointer;
+    position:relative;margin-right:1.5rem;padding-left:0;padding-right:0;
+    white-space:nowrap;transition:color .15s;text-transform:uppercase;
+  }
+  .tab:hover{color:#fff;}
+  .tab.active{color:var(--theme-color-1);}
+  .tab.active::after{
+    content:" ";position:absolute;left:0;bottom:0;width:100%;height:2px;
+    background:var(--theme-color-1);border-radius:10px;
+  }
+  .pane{display:none;}
+  .pane.active{display:block;}
+
+  /* ============ CARDS ============ */
+  .card{
+    background:var(--foreground-color);border-radius:2px;
+    overflow:hidden;display:flex;flex-direction:column;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+  }
+  .card-img-top{width:100%;aspect-ratio:3/1;object-fit:cover;display:block;background:var(--card-strong);}
+  .card-body{padding:1.4rem;}
+  .card-title{font-family:'Nunito', sans-serif;font-size:1.1rem;font-weight:500;letter-spacing:.5px;text-transform:none;color:var(--primary-color);margin-bottom:1rem;}
+  .card-title hr{border:none;border-top:1px solid var(--separator-color);margin:10px 0 0;}
+  .themed-lbl{font-family:'Nunito',sans-serif;color:var(--theme-color-1);font-size:14px;font-weight:500;letter-spacing:.3px;text-transform:uppercase;margin:0 0 7px;}
+  .val{font-family:'Nunito',sans-serif;color:#8f8f8f;font-size:15px;font-weight:400;margin:0 0 12px;}
+  .text-muted{color:var(--primary-color);}
+
+  .row{display:grid;gap:22px;}
+  .g-details{grid-template-columns:4fr 5fr;}
+  .g-2{grid-template-columns:1fr 1fr;}
+  @media(max-width:900px){.g-details,.g-2{grid-template-columns:1fr;}}
+
+  /* DETAILS tab top row — 3 equal columns (Account | Penalties | Ranks) */
+  .details-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:22px;}
+  @media(max-width:1100px){.details-top{grid-template-columns:1fr 1fr;}}
+  @media(max-width:760px){.details-top{grid-template-columns:1fr;}}
+  .details-top .card{min-height:100%;}
+
+  .progress{background:var(--card-strong);border-radius:8px;height:16px;overflow:hidden;}
+  .progress .bar{height:100%;background:var(--theme-color-1);border-radius:8px;}
+  .lvl{font-family:'Nunito',sans-serif;font-size:17px;font-weight:400;margin:0 0 10px;color:#8f8f8f;line-height:1.4;}
+  .lvl-xp{font-family:'Nunito',sans-serif;font-size:15px;font-weight:400;color:#8f8f8f;margin:-2px 0 16px;line-height:1.4;}
+
+  /* ============ ITEM CARDS (matches original skin-card / agent-card / other-card) ============ */
+  /* item grids use col-xl-2 -> 6 per row; store uses col-lg-3 -> 4 per row */
+  .grid{display:grid;gap:1.5rem;grid-template-columns:repeat(6,1fr);}
+  @media(max-width:1400px){.grid{grid-template-columns:repeat(5,1fr);}}
+  @media(max-width:1199px){.grid{grid-template-columns:repeat(4,1fr);}}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:640px){.grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:420px){.grid{grid-template-columns:1fr;}}
+  .list-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(4,1fr);}
+  @media(max-width:1199px){.list-grid{grid-template-columns:repeat(3,1fr);}}
+  @media(max-width:767px){.list-grid{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:520px){.list-grid{grid-template-columns:1fr;}}
+
+  .item{
+    background:var(--foreground-color);border-radius:2px;overflow:hidden;
+    box-shadow:0 1px 15px rgba(0,0,0,.15),0 1px 8px rgba(0,0,0,.15);
+    margin-bottom:1.5rem;
+  }
+  .item .pos{position:relative;height:200px;}            /* skin-card .position-relative height 200px */
+  .item .thumb{width:100%;text-align:center;padding:10px;margin-top:30px;}
+  .item .thumb img{object-fit:contain;height:130px;width:80%;}          /* skin-image 130px/80% */
+  .item .thumb img.wide{object-fit:cover;height:130px;width:100%;}      /* other-image 130px cover */
+  .item .thumb img.tall{object-fit:contain;height:180px;width:80%;
+    filter:drop-shadow(2px 4px 3px #000);}                               /* agent-image 180px */
+  /* price badge — top-right, pill, #aa5e6c bg */
+  .badge-price{
+    position:absolute;top:8px;right:-7px;
+    background:#aa5e6c;color:#d0d0d0;
+    padding:0.55em 1.25em 0.6em;border-radius:50rem;font-size:74%;font-weight:700;
+  }
+  /* tier badge — top-left, pill, transparent w/ icon */
+  .badge-tier{
+    position:absolute;top:12px;left:12px;
+    display:inline-flex;align-items:center;
+    background:transparent;padding:0;
+  }
+  .badge-tier img{height:26px;width:auto;display:block;filter:drop-shadow(1px 2px 2px rgba(0,0,0,.6));}
+  .badge-tier span{display:none;}
+  /* centered footer name */
+  .item .card-footer{text-align:center;padding:0.9rem 1rem;}
+  .item .card-subtitle{margin:0;font-size:15px;font-weight:600;color:var(--primary-color);}
+  .item .card-sub-sub{font-size:12.5px;color:var(--primary-color);margin-top:2px;}
+
+  .empty{border:1px dashed var(--separator-color);border-radius:4px;padding:34px;text-align:center;color:var(--primary-color);font-size:14px;}
+  .section-title{display:flex;align-items:center;justify-content:space-between;margin:30px 0 14px;}
+  .section-title h3{font-family:'Nunito', sans-serif;font-size:1.2rem;font-weight:700;letter-spacing:.5px;margin:0;text-transform:uppercase;color:var(--heading);}
+  .section-title .total{font-size:13px;color:var(--primary-color);font-weight:600;}
+
+  /* header like the original card-title (muted text + divider) */
+  .title-card{
+    background:var(--foreground-color);border-radius:2px;padding:1.4rem 1.4rem 0.2rem;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+    margin-bottom:1.5rem;
+  }
+  .title-card .title-text{
+    font-size:1.15rem;font-weight:500;color:var(--primary-color);margin-bottom:1rem;
+  }
+  .title-card .title-cur{
+    float:right;margin-top:2px;display:flex;align-items:center;gap:6px;color:var(--heading);font-size:15px;font-weight:400;
+  }
+  .title-card .title-cur img{height:30px;width:auto;display:block;}
+  .title-card .title-cur .cur{font-size:14px;font-weight:400;color:var(--primary-color);margin:0 0 0 5px;}
+  .title-card::after{display:block;content:"";border-bottom:1px solid var(--separator-color);margin:1.1rem -1.4rem 0.2rem;}
+
+  /* ranks inside the DETAILS top-row card */
+  .rank-inline{display:flex;align-items:center;gap:16px;padding:14px 4px;border-bottom:1px solid var(--separator-color);font-size:.95rem;color:var(--heading);font-weight:400;}
+  .rank-inline:last-child{border-bottom:none;}
+  .rank-inline img{width:50px;height:50px;object-fit:contain;}
+  .rank-inline div{color:#d8d8d8;}
+
+  .currency{display:flex;gap:18px;align-items:center;margin:6px 0 18px;}
+  .coin{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:700;color:var(--heading);}
+  .coin span.dot{width:16px;height:16px;border-radius:50%;background:var(--theme-color-1);display:inline-block;}
+
+  .title-list{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
+  .title-pill{border:1px solid var(--separator-color);background:var(--foreground-color);border-radius:4px;padding:12px 14px;font-weight:700;font-size:14px;color:var(--heading);}
+
+  /* progressions */
+  .inline-titled{display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.4rem;}
+  .inline-titled .card-title{margin:0;padding:0;font-size:1.05rem;font-weight:600;color:var(--primary-color);}
+  .muted-inline{font-size:15px;color:var(--primary-color);font-weight:400;}
+  .empty-h5{width:100%;margin:1.5rem 0 .75rem;text-align:center;color:var(--muted);font-size:1.25rem;font-weight:500;}
+  .empty-card{background:var(--foreground-color);border-radius:2px;padding:1.4rem;box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);margin-bottom:1.5rem;}
+  .mission-list{display:grid;gap:1rem;}
+  .mission-inner{
+    border:1px solid var(--separator-color);border-radius:2px;background:var(--foreground-color);
+    display:flex;justify-content:space-between;align-items:center;padding:1.25rem 1.4rem;
+    box-shadow:0 1px 15px rgba(0,0,0,.1),0 1px 8px rgba(0,0,0,.1);
+  }
+  .mission-inner .card-title{margin:0;padding:0;font-size:1.05rem;font-weight:600;color:var(--primary-color);}
+  .progress-bar-circle{width:46px;height:46px;}
+  .progress-bar-circle .CircularProgressbar{width:100%;vertical-align:middle;}
+  .progress-bar-circle .CircularProgressbar .trail,.progress-bar-circle .CircularProgressbar .path{fill:none;}
+  .progress-bar-circle .CircularProgressbar path{transition:stroke-dashoffset .5s ease 0s;}
+  .progress-bar-circle .CircularProgressbar text{font-size:20px!important;fill:#8f8f8f;font-family:Nunito,sans-serif;font-weight:400;}
+
+  /* titles tab: block card with centered red title + "<name> Title" footer */
+  .grid-titles .item .pos{height:120px;padding:18px 12px;display:flex;align-items:center;justify-content:center;}
+  .title-block{font-size:15px;font-weight:700;color:var(--theme-color-1);text-align:center;}
+  .title-suffix{color:var(--primary-color);font-weight:400;}
+
+  .mission{border:1px solid var(--separator-color);background:var(--foreground-color);border-radius:4px;padding:16px;}
+  .mission .m-title{font-weight:700;margin-bottom:10px;color:var(--heading);}
+  .mission .m-pct{font-size:20px;font-weight:800;color:var(--theme-color-1);}
+
+  footer{padding:40px 22px;text-align:center;color:var(--primary-color);font-size:13px;}
+
+  /* a small hint box at the top of the page (you can delete this whole .howto div) */
+  .howto{background:var(--foreground-color);border-left:3px solid var(--theme-color-1);border-radius:2px;padding:14px 16px;font-size:13px;color:var(--primary-color);margin:0 0 24px;}
+  .howto b{color:var(--heading);}
+  .howto code{color:var(--theme-color-1);}

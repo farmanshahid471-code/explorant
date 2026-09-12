@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Explorant — Explore and showcase your Valorant Account</title>
+<meta name="description" content="The ultimate platform for managing accounts, viewing stats, inventory and store, and sharing with friends." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<!-- ================= NAVBAR (logo left; socials + LOGIN + REGISTER right) ================= -->
+<div class="navbar">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="Explorant" /></a>
+
+  <button class="nav-toggle" aria-label="Menu"><span></span><span></span><span></span></button>
+
+  <div class="nav-r">
+    <div class="nav-socials">
+      <a class="tw" href="https://twitter.com/TheExplorant" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 4.9c-.8.4-1.7.6-2.6.8a4.5 4.5 0 0 0-7.7 4.1A12.8 12.8 0 0 1 3.4 4.1a4.5 4.5 0 0 0 1.4 6 4.4 4.4 0 0 1-2-.5 4.5 4.5 0 0 0 3.6 4.4 4.5 4.5 0 0 1-2 .1 4.5 4.5 0 0 0 4.2 3.1A9 9 0 0 1 2 19.1a12.7 12.7 0 0 0 6.9 2c8.3 0 12.8-6.8 12.8-12.8v-.6A9 9 0 0 0 23 4.9z"/></svg>Twitter</a>
+      <a class="dc" href="https://discord.gg/w43VMTjJhr" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.9 3c-.2.4-.5 1-.6 1.4a18 18 0 0 0-5.4 0C9.7 3.9 9.4 3.4 9.2 3a19.8 19.8 0 0 0-4.4 1.4A20.6 20.6 0 0 0 2.1 18.4 19.8 19.8 0 0 0 7.1 20.3c.5-.7.9-1.4 1.3-2.1-.7-.3-1.4-.6-2-1l.5-.4a14 14 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1 .4.7.8 1.4 1.3 2.1a19.7 19.7 0 0 0 5-1.9A20.6 20.6 0 0 0 20.3 4.4zM8.7 15.7c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg>Discord</a>
+      <a class="fb" href="https://facebook.com/TheExplorant" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg>Facebook</a>
+    </div>
+    <a class="nav-login" href="login.html">LOGIN</a>
+    <a class="btn-register" href="register.html">REGISTER</a>
+    <div class="nav-socials mobile"></div>
+  </div>
+</div>
+
+<!-- ================= HERO ================= -->
+<header class="hero">
+  <div class="wrap">
+    <h1>EXPLORANT</h1>
+    <p class="tag">Explore and showcase your Account with Explorant</p>
+    <p class="sub">The ultimate platform for managing account, viewing stats, inventory and store, and sharing with friends.</p>
+    <p class="explore">Explore Now !!</p>
+    <a class="btn-start" href="register.html">GET STARTED <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M9 6l6 6-6 6"/></svg></a>
+  </div>
+</header>
+
+<!-- ================= FEATURES ================= -->
+<section class="section">
+  <div class="wrap">
+    <h2>Why Explorant?</h2>
+    <p class="lead">Everything you need to explore, manage and showcase your account — in one sleek place.</p>
+    <div class="features" id="features"></div>
+  </div>
+</section>
+
+<!-- ================= PRICING ================= -->
+<section class="section" style="background:var(--card);">
+  <div class="wrap">
+    <h2>Pricing</h2>
+    <p class="lead">Unleash the Power of Explorant with Premium Features.</p>
+    <div class="pricing" id="pricing"></div>
+  </div>
+</section>
+
+<!-- ================= COMPARISON ================= -->
+<section class="section">
+  <div class="wrap">
+    <h2>Features Comparison</h2>
+    <p class="lead">Compare what each tier unlocks for your account.</p>
+    <div class="tablewrap"><table class="cmp" id="cmp"></table></div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="ctaband">
+  <div class="wrap">
+    <div>
+      <h2>Liking it so Far?</h2>
+      <p>Looking to easily manage and showcase your accounts, stats, and inventory to your friends? Look no further than Explorant — the all-in-one platform for players to flex their gameplay and connect with others in style.</p>
+      <a class="btn btn-solid" href="register.html">Register Now</a>
+    </div>
+    <div class="logo"><img src="assets/logo.png" alt="Explorant" /></div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="socials">
+    <a href="https://twitter.com/TheExplorant" target="_blank" rel="noopener" aria-label="Twitter"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 4.9c-.8.4-1.7.6-2.6.8a4.5 4.5 0 0 0-7.7 4.1A12.8 12.8 0 0 1 3.4 4.1a4.5 4.5 0 0 0 1.4 6 4.4 4.4 0 0 1-2-.5 4.5 4.5 0 0 0 3.6 4.4 4.5 4.5 0 0 1-2 .1 4.5 4.5 0 0 0 4.2 3.1A9 9 0 0 1 2 19.1a12.7 12.7 0 0 0 6.9 2c8.3 0 12.8-6.8 12.8-12.8v-.6A9 9 0 0 0 23 4.9z"/></svg></a>
+    <a href="https://discord.gg/w43VMTjJhr" target="_blank" rel="noopener" aria-label="Discord"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.9 3c-.2.4-.5 1-.6 1.4a18 18 0 0 0-5.4 0C9.7 3.9 9.4 3.4 9.2 3a19.8 19.8 0 0 0-4.4 1.4A20.6 20.6 0 0 0 2.1 18.4 19.8 19.8 0 0 0 7.1 20.3c.5-.7.9-1.4 1.3-2.1-.7-.3-1.4-.6-2-1l.5-.4a14 14 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1 .4.7.8 1.4 1.3 2.1a19.7 19.7 0 0 0 5-1.9A20.6 20.6 0 0 0 20.3 4.4zM8.7 15.7c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2zm6.6 0c-1 0-1.8-.9-1.8-2s.8-2 1.8-2 1.8.9 1.8 2-.8 2-1.8 2z"/></svg></a>
+    <a href="https://facebook.com/TheExplorant" target="_blank" rel="noopener" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.6 9.9v-7H7.9V12h2.5V9.8c0-2.5 1.5-3.9 3.8-3.9 1.1 0 2.2.2 2.2.2v2.5h-1.3c-1.2 0-1.6.8-1.6 1.6V12h2.8l-.4 2.9h-2.4v7A10 10 0 0 0 22 12z"/></svg></a>
+  </div>
+  <div class="links">
+    <a href="#">Terms</a><span>·</span><a href="#">Privacy</a><span>·</span><a href="https://twitter.com/TheExplorant" target="_blank" rel="noopener">Twitter</a><span>·</span><a href="https://discord.gg/w43VMTjJhr" target="_blank" rel="noopener">Discord</a>
+  </div>
+</footer>
+
+<script src="assets/data.js"></script>
+<script src="assets/main.js"></script>
+</body>
+</html>

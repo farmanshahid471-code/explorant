@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Register - Explorant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+<div class="auth-head">
+  <a class="logo" href="index.html"><img src="assets/logo.png" alt="Explorant" /></a>
+</div>
+
+<div class="auth-body">
+  <div class="auth-card">
+    <div class="logo-sm"><img src="assets/logo.png" alt="Explorant" /></div>
+    <h1>Register</h1>
+    <p class="switch">Already Registered? <a href="login.html">Login</a></p>
+
+    <div id="msg"></div>
+
+    <form id="registerForm" novalidate>
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" autocomplete="new-password" required />
+      </div>
+      <div class="field">
+        <label for="confirm">Confirm Password</label>
+        <input type="password" id="confirm" name="confirm" autocomplete="new-password" required />
+      </div>
+
+      <!-- reCAPTCHA placeholder (mock) -->
+      <div class="recaptcha-box" id="recaptcha">
+        <div class="box" id="recaptchaBox"></div>
+        <span>I'm not a robot</span>
+        <small>reCAPTCHA</small>
+      </div>
+
+      <button type="submit" class="btn btn-solid btn-full">REGISTER</button>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  var form    = document.getElementById("registerForm");
+  var msg     = document.getElementById("msg");
+  var box     = document.getElementById("recaptchaBox");
+  var verified = false;
+  // mock captcha tick
+  document.getElementById("recaptcha").addEventListener("click", function(e){
+    e.preventDefault();
+    if(!verified){ box.style.borderColor = "#24b299"; box.innerHTML = "✓"; verified = true; }
+  });
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    msg.className = "alert";
+    var email = document.getElementById("email").value.trim();
+    var pass  = document.getElementById("password").value;
+    var conf  = document.getElementById("confirm").value;
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = "Please enter a valid e-mail address."; return; }
+    if(pass.length < 6){ msg.textContent = "Password must be at least 6 characters."; return; }
+    if(pass !== conf){ msg.textContent = "Passwords do not match."; return; }
+    if(!verified){ msg.textContent = "Please verify that you are not a robot."; return; }
+    // Demo: registration is admin-approved in the full build. Here we just confirm.
+    msg.className = "alert ok";
+    msg.textContent = "Account created — you can now log in.";
+    setTimeout(function(){ window.location.href = "login.html"; }, 1000);
+  });
+})();
+</script>
+</body>
+</html>

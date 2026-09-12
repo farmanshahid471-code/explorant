@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login - Explorant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/app.css" />
+</head>
+<body>
+
+<div class="login-page">
+  <!-- decorative accents -->
+  <span class="deco line" style="left:8%;top:16%;"><i></i><i></i><i></i></span>
+  <span class="deco sq"    style="left:11%;top:24%;color:var(--theme-color-1);"></span>
+  <span class="deco sq"    style="left:13%;top:27%;color:var(--primary-color);"></span>
+  <span class="deco line"  style="left:9%;top:74%;"></span>
+  <span class="deco sq"    style="left:11%;top:80%;color:var(--theme-color-1);"></span>
+  <span class="deco line"  style="right:9%;top:20%;"></span>
+  <span class="deco sq"    style="right:12%;top:26%;color:var(--theme-color-1);"></span>
+  <span class="deco sq"    style="right:14%;top:30%;color:var(--primary-color);"></span>
+  <span class="deco line"  style="left:20%;bottom:8%;"></span>
+  <span class="deco sq"    style="left:22%;bottom:12%;color:var(--theme-color-1);"></span>
+
+  <!-- vertical tagline -->
+  <div class="side-text"><b>DEFY</b> THE <b>LIMITS</b></div>
+
+  <!-- login card -->
+  <div class="login-card">
+    <div class="logo"><img src="assets/logo.png" alt="Explorant" /></div>
+
+    <div class="row">
+      <span class="t">Login</span>
+      <span class="s">Not Registered? <a href="register.html">Register</a></span>
+    </div>
+
+    <div id="msg" style="display:none;margin-bottom:18px;"></div>
+
+    <form id="loginForm" novalidate>
+      <div class="fld">
+        <span class="lbl">E-mail</span>
+        <input type="email" id="email" autocomplete="username" />
+        <span class="bar"></span>
+      </div>
+      <div class="fld">
+        <span class="lbl">Password</span>
+        <input type="password" id="password" autocomplete="current-password" />
+        <span class="bar"></span>
+      </div>
+
+      <div class="foot">
+        <a class="forget" href="forgot-password.html">Forget password?</a>
+        <button type="submit" class="btn-login">LOGIN</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function(){
+  var form = document.getElementById("loginForm");
+  var msg  = document.getElementById("msg");
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    var email = document.getElementById("email").value.trim();
+    var pass  = document.getElementById("password").value;
+    function show(text){
+      msg.style.display = "block";
+      msg.style.color = "#e56a74";
+      msg.style.fontSize = "12px";
+      msg.textContent = text;
+    }
+    if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ show("Please enter your email address."); return; }
+    if(pass.length < 6){ show("Please enter your password."); return; }
+    // Demo: successful login -> dashboard
+    msg.style.display="none";
+    window.location.href = "app.html";
+  });
+})();
+</script>
+</body>
+</html>

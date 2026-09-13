@@ -230,10 +230,6 @@
 
   footer{padding:40px 22px;text-align:center;color:var(--primary-color);font-size:13px;}
 
-  /* a small hint box at the top of the page (you can delete this whole .howto div) */
-  .howto{background:var(--foreground-color);border-left:3px solid var(--theme-color-1);border-radius:2px;padding:14px 16px;font-size:13px;color:var(--primary-color);margin:0 0 24px;}
-  .howto b{color:var(--heading);}
-  .howto code{color:var(--theme-color-1);}
 </style>
 </head>
 <body>
@@ -248,7 +244,6 @@
   <main>
     <h1 class="account-name">MY&nbsp;ARSENAL<small>gun collection tracker</small></h1>
 
-    <div class="howto" id="howto"></div>
 
     <!-- ============ TABS ============ -->
     <nav class="tabs" id="tabs"></nav>
@@ -763,14 +758,6 @@ if(!MISSIONS.length){ document.getElementById("missionList").innerHTML=`<div cla
     <div class="card-title">${esc(m.name)}</div>
     <div class="progress-bar-circle">${ring(m.percent,"#dd3f4c")}</div>
   </div>`).join("");
-
-/* hint box */
-document.getElementById("howto").innerHTML=`
-  <b>This whole page is driven by the EDIT block at the top of the &lt;script&gt;.</b><br/>
-  To add a gun: copy a line in the <code>GUNS</code> list, paste a skin
-  <b>UUID</b> into <code>newGun("uuid", "Name", "Tier", price)</code>, save, refresh.
-  To remove a gun: comment out its line with <code>//</code>. Account name, level, ranks,
-  titles, missions, agents and every tab's items are all editable there too.`;
 
 /* tab switching */
 document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{

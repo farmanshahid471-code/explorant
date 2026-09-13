@@ -3053,7 +3053,7 @@
     "level": 27,
     "levelNow": 3024,
     "levelMax": 5000,
-    "totalValue": 6925,
+    "totalValue": 12275,
     "banner": "https://media.valorant-api.com/playercards/afbb0530-47c3-cf58-c09c-359f8dfacda9/wideart.png",
     "ranks": [
       {
@@ -3066,6 +3066,12 @@
       }
     ],
     "skins": [
+      {
+        "name": "VCT 2026 Sigil",
+        "tier": "Exclusive",
+        "price": 5350,
+        "img": "https://media.valorant-api.com/weaponskinlevels/fb970da4-4f6a-5cb6-a484-1abf95e6f12d/displayicon.png"
+      },
       {
         "name": "Kuronami Vandal",
         "tier": "Exclusive",

@@ -37,6 +37,7 @@ NF = "Not Fetched Yet. Please Ask Owner to Refresh Account"
 # ACCOUNT 1 — Chota Seth (QRnJpJB9)
 # =====================================================================
 CS_SKINS = [
+    IT("VCT 2026 Sigil",       "Exclusive", 5350, WL("fb970da4-4f6a-5cb6-a484-1abf95e6f12d")),
     IT("Kuronami Vandal",      "Exclusive", 2375, WL("636c1f83-44f7-6bc4-0b24-88a1beb66c2d")),
     IT("Reaver Spectre",       "Premium",   1775, WL("0a0237d3-4d57-0ed2-ab65-c898a7bc755b")),
     IT("Ayakashi Phantom",     "Exclusive", 1775, WL("27acfa4d-4c6e-5f16-496e-f7baad3e00e0")),

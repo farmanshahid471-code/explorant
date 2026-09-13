@@ -116,7 +116,7 @@
     "level": 47,
     "levelNow": 566,
     "levelMax": 5000,
-    "totalValue": 16625,
+    "totalValue": 21175,
     "banner": "https://media.valorant-api.com/playercards/793bf77b-4296-d121-d302-398d3adeca67/wideart.png",
     "ranks": [
       {
@@ -130,10 +130,34 @@
     ],
     "skins": [
       {
-        "name": "Singularity Butterfly Knife",
+        "name": "Soulstrife Scythe",
         "tier": "Exclusive",
-        "price": 4350,
-        "img": "https://media.valorant-api.com/weaponskinlevels/698dc2f6-4ba9-9409-4737-05afdc622a1c/displayicon.png"
+        "price": 3550,
+        "img": "https://media.valorant-api.com/weaponskinlevels/656c5de8-47ca-4eeb-6051-c9aabbf37baa/displayicon.png"
+      },
+      {
+        "name": "VCT 2026 Sigil",
+        "tier": "Exclusive",
+        "price": 5350,
+        "img": "https://media.valorant-api.com/weaponskinlevels/fb970da4-4f6a-5cb6-a484-1abf95e6f12d/displayicon.png"
+      },
+      {
+        "name": "Ayakashi Phantom",
+        "tier": "Exclusive",
+        "price": 1775,
+        "img": "https://media.valorant-api.com/weaponskinlevels/27acfa4d-4c6e-5f16-496e-f7baad3e00e0/displayicon.png"
+      },
+      {
+        "name": "Blackthorn Vandal",
+        "tier": "Exclusive",
+        "price": 2175,
+        "img": "https://media.valorant-api.com/weaponskinlevels/72569ba6-41c1-2b36-9f8b-6292c5ac8295/displayicon.png"
+      },
+      {
+        "name": "Gaia's Vengeance Marshal",
+        "tier": "Premium",
+        "price": 1775,
+        "img": "https://media.valorant-api.com/weaponskinlevels/6046ca8f-4100-4b1a-7e8d-5e8c6625342f/displayicon.png"
       },
       {
         "name": "Kuronami Vandal",
@@ -146,24 +170,6 @@
         "tier": "Exclusive",
         "price": 2175,
         "img": "https://media.valorant-api.com/weaponskinlevels/49a65cb3-4bcb-13c1-10b1-d1a4957edeea/displayicon.png"
-      },
-      {
-        "name": "Rogue Vandal",
-        "tier": "Exclusive",
-        "price": 2175,
-        "img": "https://media.valorant-api.com/weaponskinlevels/653c7c1d-4d92-3798-6314-eab5beb70ae6/displayicon.png"
-      },
-      {
-        "name": "Helix Phantom",
-        "tier": "Premium",
-        "price": 1775,
-        "img": "https://media.valorant-api.com/weaponskinlevels/1d592085-42f4-6e27-598e-899e29cf26b7/displayicon.png"
-      },
-      {
-        "name": "Reaver Phantom",
-        "tier": "Premium",
-        "price": 1775,
-        "img": "https://media.valorant-api.com/weaponskinlevels/4c18d802-409d-ec20-f630-d3abfcaa37c7/displayicon.png"
       },
       {
         "name": "Crash Out Bandit",

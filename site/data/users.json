@@ -3718,16 +3718,7 @@
     "agentTotal": 0,
     "nextFirstWin": "-",
     "nextWeekly": "-",
-    "info": [
-      [
-        "Email",
-        "No"
-      ],
-      [
-        "Phone",
-        "No"
-      ]
-    ],
+    "info": [],
     "expired": false,
     "slug": "0KKftpEI"
   }

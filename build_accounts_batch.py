@@ -196,7 +196,7 @@ ZYROX = {
     "battlepasses": [], "bpTotal": 0, "bpEmptyMsg": "Battlepasses " + NF,
     "agents": ZX_AGENTS, "agentTotal": 0,
     "nextFirstWin": "-", "nextWeekly": "-",
-    "info": [["Email", "No"], ["Phone", "No"]],
+    "info": [],
     "expired": False, "slug": "0KKftpEI",
 }
 

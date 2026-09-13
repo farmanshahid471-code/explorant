@@ -740,9 +740,6 @@ document.getElementById("missionList").innerHTML=MISSIONS.map((m,i)=>`
     <div class="progress-bar-circle">${ring(m.percent,"#dd3f4c")}</div>
   </div>`).join("");
 
-/* hint box */
-document.getElementById("howto").style.display="none";
-
 /* tab switching */
 document.querySelectorAll(".tab").forEach(tab=>tab.addEventListener("click",()=>{
   const target=tab.dataset.pane;
